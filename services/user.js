@@ -84,7 +84,7 @@ class UserServices {
 
     // Generate JWT token
     const token = UserServices.getJwtToken(user);
-     user = {
+    user = {
       userId: user.userId,
       name: user.name,
       oAuthProvider: user.oAuthProvider,
@@ -95,11 +95,11 @@ class UserServices {
       timeZone: user.timeZone,
       maxStreak: user.maxStreak,
       updatedAt: user.updatedAt
-  };
-  
+    };
+
     return {
       token,
-      user,
+      user
     };
   }
 
@@ -111,9 +111,9 @@ class UserServices {
     // Check if user already exists in the database
     let user = await User.findOne({
       where: {
-        email: email,
+        email: email
       },
-      raw: true,
+      raw: true
     });
 
     // If user doesn't exist, create a new user
@@ -124,10 +124,10 @@ class UserServices {
         oAuthId: oAuthId,
         email: email,
         additionalData: additionalData,
-        timezone,
+        timezone
       })),
         {
-          raw: true,
+          raw: true
         };
     }
     const response = {
@@ -138,7 +138,7 @@ class UserServices {
       email: user.email,
       additionalData: user.additionalData,
       countryStreak: user.countryStreak,
-      movieStreak: user.movieStreak,
+      movieStreak: user.movieStreak
     };
     const token = UserServices.getJwtToken(user);
 
@@ -150,7 +150,7 @@ class UserServices {
     const token = jwt.sign(
       {
         email: user.email,
-        userId: user.userId.toString(),
+        userId: user.userId.toString()
       },
       process.env.JWT_SECRET,
       { expiresIn: "3day" }
@@ -178,9 +178,10 @@ class UserServices {
       updatedUser.countryStreak,
       updatedUser.movieStreak
     );
-    console.log("user from updatedUser")
-    console.log(updatedUser)
-    console.log(updatedUser.maxStreak)
+
+    console.log("user from updatedUser");
+    console.log(updatedUser);
+    console.log(updatedUser.maxStreak);
 
     const [updatedRows] = await User.update(
       { ...updatedUser },
@@ -192,8 +193,8 @@ class UserServices {
         updatedUser
       )}`
     );
+    return updatedUser;
   }
-
 
   static async getStreaks(id) {
     const user = await User.findOne({ where: { userId: id }, raw: true });
@@ -206,7 +207,7 @@ class UserServices {
     return {
       countryStreak: user.countryStreak,
       movieStreak: user.movieStreak,
-      maxStreak: user.maxStreak,
+      maxStreak: user.maxStreak
     };
   }
   static async setStreaks({ countryStreak, movieStreak, userId }) {
@@ -220,7 +221,6 @@ class UserServices {
         user.countryStreak,
         user.movieStreak
       );
-      console.log("user from setStreaks"+user)
 
       await user.save();
 
@@ -233,7 +233,7 @@ class UserServices {
   static async incrementStreaks({
     countryStreakIncrement,
     movieStreakIncrement,
-    userId,
+    userId
   }) {
     // Find the user by userId
     const user = await User.findByPk(userId);
@@ -248,10 +248,9 @@ class UserServices {
         user.countryStreak,
         user.movieStreak
       );
-      console.log("user from incrementStreaks"+user)
       // Save the changes to the database
       const response = await user.save();
-      return { success: true, message: "Streaks updated successfully"+user };
+      return { success: true, message: "Streaks updated successfully" + user };
     } else {
       throw new Error("Could not update Streaks");
     }
@@ -260,14 +259,14 @@ class UserServices {
   static async scheduleJob(userId, type) {
     console.log(type);
     const user = await User.findByPk(userId, {
-      raw: true,
+      raw: true
     });
     const job = UserServices.scheduleJobForNextMidnight(user, type);
   }
   static scheduleJobForNextMidnight(user, type) {
     const currentDate = new Date().toLocaleString("en-US", {
       // timeZone: user.timeZone,
-      timeZone: "Asia/Kolkata",
+      timeZone: "Asia/Kolkata"
     });
 
     const nextMidnight = new Date(currentDate);
@@ -305,8 +304,8 @@ class UserServices {
     return job;
   }
 
-  static  getMaxStreak(maxStreak, countryStreak, movieStreak, userId) {
-    console.log(maxStreak,countryStreak,movieStreak)
+  static getMaxStreak(maxStreak, countryStreak, movieStreak, userId) {
+    console.log(maxStreak, countryStreak, movieStreak);
     if (!maxStreak) {
       maxStreak = { countryStreak: 0, movieStreak: 0 };
     }
@@ -320,9 +319,9 @@ class UserServices {
 
     const updatedStreak = {
       countryStreak: updatedMaxCountryStreak,
-      movieStreak: updatedMaxMovieStreak,
+      movieStreak: updatedMaxMovieStreak
     };
-    console.log("updatedStreak",updatedStreak)
+    console.log("updatedStreak", updatedStreak);
     return updatedStreak;
   }
 
@@ -330,11 +329,11 @@ class UserServices {
     try {
       const countries = await Country.findAll({
         attributes: ["countryName"],
-        group: ["countryName"],
+        group: ["countryName"]
       });
       return countries.map((country) => ({
         value: country.countryName,
-        label: country.countryName,
+        label: country.countryName
       }));
     } catch (err) {
       console.error(err);
@@ -346,11 +345,11 @@ class UserServices {
     try {
       const movies = await Movie.findAll({
         attributes: ["movieName"],
-        group: ["movieName"],
+        group: ["movieName"]
       });
       return movies.map((movie) => ({
         value: movie.movieName,
-        label: movie.movieName,
+        label: movie.movieName
       }));
     } catch (err) {
       console.error(err);

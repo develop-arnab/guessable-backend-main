@@ -60,8 +60,15 @@ exports.getQuestionStats = async (req, res, next) => {
     const { questionId } = req.params;
     const stats1 = await Question.getQuestionStats(questionId);
     const stats2 = await Question.getQuestionStatsForUnregisteredAttempts(questionId);
-    console.log(stats1,stats2)
-    const response =  Question.combineResponses(stats1,stats2);
+    let response;
+    if(stats1 && stats2) {
+    response = Question.combineResponses(stats1, stats2);
+
+    } else if (stats1) {
+      response = stats1;
+    } else {
+      response = stats2;
+    }
     res.status(200).json({
       response,
     });

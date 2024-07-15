@@ -90,11 +90,12 @@ class Question {
     });
 
     if (!questionAttemptsData || questionAttemptsData.length === 0) {
-      let error = new Error(
-        `Could not find attempt data with question id ${quesId}`
-      );
-      error.statusCode = 404;
-      throw error;
+      // let error = new Error(
+      //   `Could not find attempt data with question id ${quesId}`
+      // );
+      // error.statusCode = 404;
+      // throw error;
+      return 0
     }
     console.log("AttempData: ", questionAttemptsData);
     // Initialize counters for each attempt value
@@ -353,7 +354,11 @@ class Question {
     // Count attempts and wins
     questions.forEach((question) => {
       const attemptValue = question["Attempts.attemptValue"];
-      if (attemptValue >= 1 && attemptValue <= 4) {
+      if (
+        attemptValue >= 1 &&
+        attemptValue <= 4 &&
+        question["Attempts.isCorrect"] === 1
+      ) {
         attemptCounts[attemptValue]++;
         if (question["Attempts.isCorrect"] === 1) {
           winCount++;

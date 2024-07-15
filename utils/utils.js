@@ -1,5 +1,7 @@
 const { QuestionsConstants } = require("./constants");
 class Utils {
+
+  //For unregistered users
   static getCurrentDate() {
     const today = new Date();
     // Format the date as needed
@@ -7,26 +9,30 @@ class Utils {
     const month = String(today.getMonth() + 1).padStart(2, "0"); // January is 0!
     const day = String(today.getDate()).padStart(2, "0");
     const formattedDate = `${year}-${month}-${day}`;
-    return formattedDate;
+    // return formattedDate;
+    return "2024-07-08";
   }
 
+  //For registered users
   static getCurrentDate(timezone) {
     const options = {
       timeZone: timezone,
       year: "numeric",
       month: "2-digit",
-      day: "2-digit",
+      day: "2-digit"
     };
     const formatter = new Intl.DateTimeFormat("en-US", options);
     const parts = formatter.formatToParts(new Date());
     const formattedDate = `${parts[4].value}-${parts[0].value}-${parts[2].value}`;
-    return formattedDate;
+     console.log("Timezone DATE");
+    // return formattedDate;
+    return "2024-07-10";
   }
 
   static getPreviousDayDate(timezone) {
     // Get the current date in the provided timezone
     const currentDate = new Date().toLocaleString("en-US", {
-      timeZone: timezone,
+      timeZone: timezone
     });
 
     // Convert the currentDate to a Date object

@@ -4,99 +4,165 @@ const Question = require("./models/questions");
 const CountryQuestion = require("./models/countryQuestions");
 const MovieQuestion = require("./models/movieQuestions");
 const Attempt = require("./models/attempts");
-// const QuestionStatsForUnregisteredUser = require("./models/questionStatsForUnregisteredUsers");
 
 async function seedDatabase() {
+  // Sync models in order of dependencies
   await sequelize.sync({ force: true });
 
-  // Sample data for Users
-  const users = [
-    {
-      name: "John Doe",
-      email: "john.doe@example.com",
-      password: "password123",
-      countryStreak: 5,
-      movieStreak: 3,
-      timeZone: "+01:00",
-      maxStreak: JSON.stringify({ country: 5, movie: 3 })
-    },
-    {
-      name: "Jane Smith",
-      email: "jane.smith@example.com",
-      password: "password456",
-      countryStreak: 2,
-      movieStreak: 4,
-      timeZone: "+02:00",
-      maxStreak: JSON.stringify({ country: 2, movie: 4 })
-    }
-  ];
-
-  // Sample data for Questions
+  // Sample data for Questions, CountryQuestions, and MovieQuestions
   const questions = [
     {
-      date: "2024-07-01",
-      clueMainBefore: "Main clue before the image",
-      clueImage: "image1.jpg",
-      clueMainAfter: "Main clue after the image",
+      date: "2024-07-07",
+      clueMainBefore: "Identify this country!",
+      clueImage: "france_image.jpg",
+      clueMainAfter: "You guessed France!",
+      category: "country",
+      answer: "France",
       CountryQuestion: {
         countryName: "France",
-        clueLatLong: "48.8566, 2.3522",
+        clueLatLong: { lat: "48.8566", long: "2.3522" },
         clueFlag: "flag_france.png",
         clueCapital: "Paris",
         wikiLink: "https://en.wikipedia.org/wiki/France"
       }
     },
     {
-      date: "2024-07-02",
-      clueMainBefore: "Main clue before the image",
-      clueImage: "image2.jpg",
-      clueMainAfter: "Main clue after the image",
+      date: "2024-07-08",
+      clueMainBefore: "Identify this country!",
+      clueImage: "germany_image.jpg",
+      clueMainAfter: "You guessed Germany!",
+      category: "country",
+      answer: "Germany",
+      CountryQuestion: {
+        countryName: "Germany",
+        clueLatLong: { lat: "52.5200", long: "13.4050" },
+        clueFlag: "flag_germany.png",
+        clueCapital: "Berlin",
+        wikiLink: "https://en.wikipedia.org/wiki/Germany"
+      }
+    },
+    {
+      date: "2024-07-09",
+      clueMainBefore: "Identify this country!",
+      clueImage: "japan_image.jpg",
+      clueMainAfter: "You guessed Japan!",
+      category: "country",
+      answer: "Japan",
+      CountryQuestion: {
+        countryName: "Japan",
+        clueLatLong: { lat: "35.6895", long: "139.6917" },
+        clueFlag: "flag_japan.png",
+        clueCapital: "Tokyo",
+        wikiLink: "https://en.wikipedia.org/wiki/Japan"
+      }
+    },
+    {
+      date: "2024-07-10",
+      clueMainBefore: "Identify this country!",
+      clueImage: "australia_image.jpg",
+      clueMainAfter: "You guessed Australia!",
+      category: "country",
+      answer: "Australia",
+      CountryQuestion: {
+        countryName: "Australia",
+        clueLatLong: { lat: "-35.2809", long: "149.1300" },
+        clueFlag: "flag_australia.png",
+        clueCapital: "Canberra",
+        wikiLink: "https://en.wikipedia.org/wiki/Australia"
+      }
+    },
+    {
+      date: "2024-07-11",
+      clueMainBefore: "Identify this country!",
+      clueImage: "brazil_image.jpg",
+      clueMainAfter: "You guessed Brazil!",
+      category: "country",
+      answer: "Brazil",
+      CountryQuestion: {
+        countryName: "Brazil",
+        clueLatLong: { lat: "-15.8267", long: "-47.9218" },
+        clueFlag: "flag_brazil.png",
+        clueCapital: "Brasília",
+        wikiLink: "https://en.wikipedia.org/wiki/Brazil"
+      }
+    },
+    {
+      date: "2024-07-12",
+      clueMainBefore: "Identify this movie!",
+      clueImage: "inception_image.jpg",
+      clueMainAfter: "You guessed Inception!",
+      category: "movie",
+      answer: "Inception",
       MovieQuestion: {
         movieName: "Inception",
         clueYear: 2010,
         clueDirector: "Christopher Nolan",
-        clueCast: ["Leonardo DiCaprio", "Joseph Gordon-Levitt"],
+        clueCast: "Leonardo DiCaprio,Joseph Gordon-Levitt,Ellen Page",
         imdbLink: "https://www.imdb.com/title/tt1375666/"
+      }
+    },
+    {
+      date: "2024-07-13",
+      clueMainBefore: "Identify this movie!",
+      clueImage: "matrix_image.jpg",
+      clueMainAfter: "You guessed The Matrix!",
+      category: "movie",
+      answer: "The Matrix",
+      MovieQuestion: {
+        movieName: "The Matrix",
+        clueYear: 1999,
+        clueDirector: "Lana Wachowski, Lilly Wachowski",
+        clueCast: "Keanu Reeves,Laurence Fishburne,Carrie-Anne Moss",
+        imdbLink: "https://www.imdb.com/title/tt0133093/"
+      }
+    },
+    {
+      date: "2024-07-14",
+      clueMainBefore: "Identify this movie!",
+      clueImage: "godfather_image.jpg",
+      clueMainAfter: "You guessed The Godfather!",
+      category: "movie",
+      answer: "The Godfather",
+      MovieQuestion: {
+        movieName: "The Godfather",
+        clueYear: 1972,
+        clueDirector: "Francis Ford Coppola",
+        clueCast: "Marlon Brando, Al Pacino, James Caan",
+        imdbLink: "https://www.imdb.com/title/tt0068646/"
+      }
+    },
+    {
+      date: "2024-07-15",
+      clueMainBefore: "Identify this movie!",
+      clueImage: "lotr_image.jpg",
+      clueMainAfter:
+        "You guessed The Lord of the Rings: The Fellowship of the Ring!",
+      category: "movie",
+      answer: "The Lord of the Rings: The Fellowship of the Ring",
+      MovieQuestion: {
+        movieName: "The Lord of the Rings: The Fellowship of the Ring",
+        clueYear: 2001,
+        clueDirector: "Peter Jackson",
+        clueCast: "Elijah Wood,Ian McKellen,Orlando Bloom",
+        imdbLink: "https://www.imdb.com/title/tt0120737/"
+      }
+    },
+    {
+      date: "2024-07-16",
+      clueMainBefore: "Identify this movie!",
+      clueImage: "shawshank_image.jpg",
+      clueMainAfter: "You guessed The Shawshank Redemption!",
+      category: "movie",
+      answer: "The Shawshank Redemption",
+      MovieQuestion: {
+        movieName: "The Shawshank Redemption",
+        clueYear: 1994,
+        clueDirector: "Frank Darabont",
+        clueCast: "Tim Robbins,Morgan Freeman,Bob Gunton",
+        imdbLink: "https://www.imdb.com/title/tt0111161/"
       }
     }
   ];
-
-  // Sample data for Attempts
-  const attempts = [
-    {
-      attemptValue: 1,
-      isCorrect: true,
-      quesID: 1
-    },
-    {
-      attemptValue: 2,
-      isCorrect: false,
-      quesID: 1
-    }
-  ];
-
-  // Sample data for QuestionStatsForUnregisteredUsers
-  const questionStats = [
-    {
-      attemptsCount: 5,
-      correctValues: 3,
-      correctAtFirstAttempt: 1,
-      correctAtSecondAttempt: 1,
-      correctAtThirdAttempt: 1,
-      correctAtFourthAttempt: 0
-    },
-    {
-      attemptsCount: 2,
-      correctValues: 1,
-      correctAtFirstAttempt: 0,
-      correctAtSecondAttempt: 1,
-      correctAtThirdAttempt: 0,
-      correctAtFourthAttempt: 0
-    }
-  ];
-
-  // Seed the database with sample data
-  await User.bulkCreate(users);
 
   for (const questionData of questions) {
     const {
@@ -109,17 +175,19 @@ async function seedDatabase() {
     if (countryData) {
       await CountryQuestion.create({
         ...countryData,
+        clueLatLong: JSON.stringify(countryData.clueLatLong),
         quesID: createdQuestion.id
       });
     }
 
     if (movieData) {
-      await MovieQuestion.create({ ...movieData, quesID: createdQuestion.id });
+      await MovieQuestion.create({
+        ...movieData,
+        clueCast: JSON.stringify(movieData.clueCast),
+        quesID: createdQuestion.id
+      });
     }
   }
-
-  await Attempt.bulkCreate(attempts);
-//   await QuestionStatsForUnregisteredUser.bulkCreate(questionStats);
 
   console.log("Database seeded successfully");
 }

@@ -6,11 +6,11 @@ const Attempt = sequelize.define(
   {
     attemptValue: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     isCorrect: {
       type: DataTypes.BOOLEAN,
-      allowNull: false
+      allowNull: true
     },
     quesID: {
       type: DataTypes.INTEGER,
@@ -18,6 +18,14 @@ const Attempt = sequelize.define(
       references: {
         model: "Questions",
         key: "id"
+      }
+    },
+    userID: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "Users",
+        key: "userId"
       }
     }
   },

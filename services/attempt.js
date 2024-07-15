@@ -102,7 +102,11 @@ class Attempt {
 
     if (truthValue !== chooseValue.trim()) {
       response.isCorrect = false;
+      if(attempt.attemptValue){
       attempt.attemptValue = parseInt(attempt.attemptValue);
+      } else {
+        attempt.attemptValue = 0
+      }
       if (attempt.attemptValue == QuestionsConstants.maxAttempts - 1) {
         console.info("Final attempt failed too");
         updatedAttempt.attemptValue = 4;
