@@ -3,6 +3,7 @@ const User = require("./models/user");
 const Question = require("./models/questions");
 const CountryQuestion = require("./models/countryQuestions");
 const MovieQuestion = require("./models/movieQuestions");
+const CurrentDate = require('./models/currentDate')
 const Attempt = require("./models/attempts");
 
 async function seedDatabase() {
@@ -12,7 +13,7 @@ async function seedDatabase() {
   // Sample data for Questions, CountryQuestions, and MovieQuestions
   const questions = [
     {
-      date: "2024-07-07",
+      date: "2024-07-16",
       clueMainBefore: "Identify this country!",
       clueImage: "france_image.jpg",
       clueMainAfter: "You guessed France!",
@@ -27,7 +28,7 @@ async function seedDatabase() {
       }
     },
     {
-      date: "2024-07-08",
+      date: "2024-07-17",
       clueMainBefore: "Identify this country!",
       clueImage: "germany_image.jpg",
       clueMainAfter: "You guessed Germany!",
@@ -42,7 +43,7 @@ async function seedDatabase() {
       }
     },
     {
-      date: "2024-07-09",
+      date: "2024-07-18",
       clueMainBefore: "Identify this country!",
       clueImage: "japan_image.jpg",
       clueMainAfter: "You guessed Japan!",
@@ -57,7 +58,7 @@ async function seedDatabase() {
       }
     },
     {
-      date: "2024-07-10",
+      date: "2024-07-19",
       clueMainBefore: "Identify this country!",
       clueImage: "australia_image.jpg",
       clueMainAfter: "You guessed Australia!",
@@ -72,7 +73,7 @@ async function seedDatabase() {
       }
     },
     {
-      date: "2024-07-11",
+      date: "2024-07-20",
       clueMainBefore: "Identify this country!",
       clueImage: "brazil_image.jpg",
       clueMainAfter: "You guessed Brazil!",
@@ -87,7 +88,7 @@ async function seedDatabase() {
       }
     },
     {
-      date: "2024-07-12",
+      date: "2024-07-16",
       clueMainBefore: "Identify this movie!",
       clueImage: "inception_image.jpg",
       clueMainAfter: "You guessed Inception!",
@@ -102,7 +103,7 @@ async function seedDatabase() {
       }
     },
     {
-      date: "2024-07-13",
+      date: "2024-07-17",
       clueMainBefore: "Identify this movie!",
       clueImage: "matrix_image.jpg",
       clueMainAfter: "You guessed The Matrix!",
@@ -117,7 +118,7 @@ async function seedDatabase() {
       }
     },
     {
-      date: "2024-07-14",
+      date: "2024-07-18",
       clueMainBefore: "Identify this movie!",
       clueImage: "godfather_image.jpg",
       clueMainAfter: "You guessed The Godfather!",
@@ -132,7 +133,7 @@ async function seedDatabase() {
       }
     },
     {
-      date: "2024-07-15",
+      date: "2024-07-19",
       clueMainBefore: "Identify this movie!",
       clueImage: "lotr_image.jpg",
       clueMainAfter:
@@ -148,7 +149,7 @@ async function seedDatabase() {
       }
     },
     {
-      date: "2024-07-16",
+      date: "2024-07-20",
       clueMainBefore: "Identify this movie!",
       clueImage: "shawshank_image.jpg",
       clueMainAfter: "You guessed The Shawshank Redemption!",
@@ -164,6 +165,12 @@ async function seedDatabase() {
     }
   ];
 
+  // const temp_date = [{
+  //   temp_date: "2024-07-07"
+  // }]
+ await CurrentDate.create({
+   temp_date: "2024-07-07"
+ });
   for (const questionData of questions) {
     const {
       CountryQuestion: countryData,
