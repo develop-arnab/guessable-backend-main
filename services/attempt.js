@@ -53,6 +53,10 @@ class Attempt {
           clueImage: attempt["Question.clueImage"],
           clueMainAfter: attempt["Question.clueMainAfter"],
         },
+        firstAttempt : attempt.firstAttempt,
+        secondAttempt : attempt.secondAttempt,
+        thirdAttempt : attempt.thirdAttempt,
+        fourthAttempt : attempt.fourthAttempt
       };
       attempt = restructuredAttempt;
     } else {
@@ -114,6 +118,7 @@ class Attempt {
           questionType === QuestionsConstants.COUNTRY
             ? questionData.countryName
             : questionData.movieName;
+        updatedAttempt.fourthAttempt = chooseValue;
         response.clueMainAfter = questionData.clueMainAfter;
         if (isRegistered) {
           console.info("user is registered and we are updating streak");
@@ -132,26 +137,33 @@ class Attempt {
           questionType === QuestionsConstants.COUNTRY
             ? { LatLong: questionData.clueLatLong }
             : { releaseYear: questionData.clueYear };
+        updatedAttempt.firstAttempt = chooseValue
       } else if (attempt.attemptValue == 1) {
         updatedAttempt.attemptValue = 2;
         response.clueTwo =
           questionType === QuestionsConstants.COUNTRY
             ? { flag: questionData.clueFlag }
             : { cast: questionData.clueCast };
+        updatedAttempt.secondAttempt = chooseValue;
       } else if (attempt.attemptValue == 2) {
         updatedAttempt.attemptValue = 3;
         response.clueThree =
           questionType === QuestionsConstants.COUNTRY
             ? { capital: questionData.clueCapital }
             : { director: questionData.clueDirector };
+        updatedAttempt.thirdAttempt = chooseValue
       }
       if (isRegistered) {
         await AttemptModel.update(
           {
             attemptValue: updatedAttempt.attemptValue,
+            firstAttempt: updatedAttempt?.firstAttempt || null,
+            secondAttempt: updatedAttempt?.secondAttempt || null,
+            thirdAttempt : updatedAttempt?.thirdAttempt || null,
+            fourthAttempt : updatedAttempt?.fourthAttempt || null,
           },
           {
-            where: { id: attemptDataId },
+            where: { id: attemptDataId }
           }
         );
       } else {
@@ -170,13 +182,32 @@ class Attempt {
       );
       await UserServices.updateStreak(true, attempt.userID, questionType);
       updatedAttempt.attemptValue++;
+      if (attempt.attemptValue) {
+        attempt.attemptValue = parseInt(attempt.attemptValue);
+      } else {
+        attempt.attemptValue = 0;
+      }
+
+      if (attempt.attemptValue == 4) {
+        updatedAttempt.fourthAttempt = chooseValue;
+      } else if (attempt.attemptValue == 1) {
+        updatedAttempt.firstAttempt = chooseValue;
+      } else if (attempt.attemptValue == 2) {
+        updatedAttempt.secondAttempt = chooseValue;
+      } else if (attempt.attemptValue == 3) {
+        updatedAttempt.thirdAttempt = chooseValue;
+      }
       await AttemptModel.update(
         {
           attemptValue: updatedAttempt.attemptValue,
           isCorrect: true,
+          firstAttempt: updatedAttempt?.firstAttempt || null,
+          secondAttempt: updatedAttempt?.secondAttempt || null,
+          thirdAttempt: updatedAttempt?.thirdAttempt || null,
+          fourthAttempt: updatedAttempt?.fourthAttempt || null
         },
         {
-          where: { id: attemptDataId },
+          where: { id: attemptDataId }
         }
       );
       await UserServices.scheduleJob(attempt.userID, questionType);
@@ -318,11 +349,18 @@ class Attempt {
   }
 
   static async saveAttemptData(attemptDataArr, userId) {
-    const attempts = attemptDataArr.map((attemptData) => ({
-      ...attemptData,
-      userID: userId,
-    }));
-    await AttemptModel.bulkCreate(attempts);
+      const attempts = attemptDataArr.map((attempt) => ({
+        attemptValue: attempt.attemptValue,
+        isCorrect: attempt.isCorrect,
+        quesID: attempt.quesID,
+        userID: userId,
+        firstAttempt: attempt.firstAttempt,
+        secondAttempt: attempt.secondAttempt,
+        thirdAttempt: attempt.thirdAttempt,
+        fourthAttempt: attempt.fourthAttempt
+      }));
+
+      await AttemptModel.bulkCreate(attempts);
   }
 }
 

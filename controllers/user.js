@@ -1,7 +1,7 @@
 const Attempt = require("../services/attempt");
 const UserServices = require("../services/user");
 const { validationResult } = require("express-validator");
-
+const QuestionStatsForUnregisteredUser = require('../models/questionStats')
 /**
  * Create a new wallet (user) by simply taking address as input
  * @param {*} req
@@ -76,20 +76,44 @@ exports.signupWithGameData = async (req, res, next) => {
     await UserServices.setStreaks({
       countryStreak: streaks.countryStreak,
       movieStreak: streaks.movieStreak,
-      userId: signupResponse.user.userId,
+      userId: signupResponse.user.userId
     });
+
+    for (const attempt of attemptDataArr) {
+      const questionStats = await QuestionStatsForUnregisteredUser.findOne({
+        where: { quesID: attempt.quesID }
+      });
+
+      if (questionStats) {
+        if (attempt.attemptValue === 1) {
+          await questionStats.decrement("correctAtFirstAttempt", { by: 1 });
+        } else if (attempt.attemptValue === 2) {
+          await questionStats.decrement("correctAtSecondAttempt", { by: 1 });
+        } else if (attempt.attemptValue === 3) {
+          await questionStats.decrement("correctAtThirdAttempt", { by: 1 });
+        } else if (attempt.attemptValue === 4) {
+          await questionStats.decrement("correctAtFourthAttempt", { by: 1 });
+        }
+        if (attempt.isCorrect) {
+          await questionStats.decrement("correctValues", { by: 1 });
+        }
+        await questionStats.decrement("attemptsCount", { by: 1 });
+      }
+    }
+
     await Attempt.saveAttemptData(attemptDataArr, signupResponse.user.userId);
 
     res.status(200).json({
       user: signupResponse.user,
       token: signupResponse.token,
-      message: "Sign in success",
+      message: "Sign in success"
     });
   } catch (err) {
     console.log(err);
     next(err);
   }
 };
+
 
 exports.getStreaks = async (req, res, next) => {
   try {

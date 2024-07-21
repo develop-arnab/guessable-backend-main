@@ -27,6 +27,22 @@ const Attempt = sequelize.define(
         model: "Users",
         key: "userId"
       }
+    },
+    firstAttempt: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    secondAttempt: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    thirdAttempt: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    fourthAttempt: {
+      type: DataTypes.STRING,
+      allowNull: true
     }
   },
   {

@@ -3,7 +3,7 @@ const User = require("./models/user");
 const Question = require("./models/questions");
 const CountryQuestion = require("./models/countryQuestions");
 const MovieQuestion = require("./models/movieQuestions");
-const CurrentDate = require('./models/currentDate')
+
 const Attempt = require("./models/attempts");
 
 async function seedDatabase() {
@@ -165,12 +165,6 @@ async function seedDatabase() {
     }
   ];
 
-  // const temp_date = [{
-  //   temp_date: "2024-07-07"
-  // }]
- await CurrentDate.create({
-   temp_date: "2024-07-07"
- });
   for (const questionData of questions) {
     const {
       CountryQuestion: countryData,
