@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "local": "nodemon index.js local",
     "prod": "nodemon index.js production",
-    "start": "node index.js local"
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "Asfar Horani",

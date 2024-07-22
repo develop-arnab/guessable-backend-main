@@ -4,15 +4,15 @@ const { SERVER_UTC, LOCAL_UTC } = require("../utils/constants");
 
 const args = process.argv;
 console.log("Arguments:", args);
-var ENV;
-if (args.length > 2) {
-  ENV = args[2];
-  console.info("Environment provided :" + ENV);
-} else {
-  ENV = "LOCAL";
-  console.info("No environment provided, using default :" + ENV);
-}
-
+// var ENV;
+// if (args.length > 2) {
+//   ENV = args[2];
+//   console.info("Environment provided :" + ENV);
+// } else {
+//   ENV = "LOCAL";
+//   console.info("No environment provided, using default :" + ENV);
+// }
+var ENV = "local";
 const config = {
   local: {
     username: process.env.DB_USERNAME_LOCAL,
