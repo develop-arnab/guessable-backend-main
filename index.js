@@ -12,7 +12,7 @@ const Utils = require("./utils/utils");
 const UserServices = require("./services/user");
 
 const app = express();
-const PORT = 8000;
+const PORT = 8080;
 
 //json parser
 app.use(express.json({ limit: "50mb" }));
