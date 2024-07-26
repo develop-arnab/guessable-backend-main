@@ -2,6 +2,8 @@ const Attempt = require("../services/attempt");
 const UserServices = require("../services/user");
 const { validationResult } = require("express-validator");
 const QuestionStatsForUnregisteredUser = require('../models/questionStats')
+const UnregisteredAttemptModel = require("../models/unregisteredAttempts");
+const AttemptModel = require("../models/attempts")
 /**
  * Create a new wallet (user) by simply taking address as input
  * @param {*} req
@@ -65,53 +67,78 @@ exports.signInWithOAuth = async (req, res, next) => {
 };
 
 exports.signupWithGameData = async (req, res, next) => {
-  try {
-    const { signUpType, attemptDataArr, userInfo, streaks } = req.body;
-    let signupResponse;
-    if (signUpType == "oauth") {
-      signupResponse = await UserServices.signinWithOAuth(userInfo);
-    } else {
-      signupResponse = await UserServices.createUser(userInfo);
-    }
-    await UserServices.setStreaks({
-      countryStreak: streaks.countryStreak,
-      movieStreak: streaks.movieStreak,
-      userId: signupResponse.user.userId
-    });
+ try {
+   const { signUpType, attemptDataArr, userInfo, streaks, userID } = req.body;
+   let signupResponse;
 
-    for (const attempt of attemptDataArr) {
-      const questionStats = await QuestionStatsForUnregisteredUser.findOne({
-        where: { quesID: attempt.quesID }
-      });
+   if (signUpType == "oauth") {
+     signupResponse = await UserServices.signinWithOAuth(userInfo);
+   } else {
+     signupResponse = await UserServices.createUser(userInfo);
+   }
 
-      if (questionStats) {
-        if (attempt.attemptValue === 1) {
-          await questionStats.decrement("correctAtFirstAttempt", { by: 1 });
-        } else if (attempt.attemptValue === 2) {
-          await questionStats.decrement("correctAtSecondAttempt", { by: 1 });
-        } else if (attempt.attemptValue === 3) {
-          await questionStats.decrement("correctAtThirdAttempt", { by: 1 });
-        } else if (attempt.attemptValue === 4) {
-          await questionStats.decrement("correctAtFourthAttempt", { by: 1 });
-        }
-        if (attempt.isCorrect) {
-          await questionStats.decrement("correctValues", { by: 1 });
-        }
-        await questionStats.decrement("attemptsCount", { by: 1 });
-      }
-    }
+   await UserServices.setStreaks({
+     countryStreak: streaks.countryStreak,
+     movieStreak: streaks.movieStreak,
+     userId: signupResponse.user.userId
+   });
 
-    await Attempt.saveAttemptData(attemptDataArr, signupResponse.user.userId);
+   for (const attempt of attemptDataArr) {
+     const unregisteredAttempt = await UnregisteredAttemptModel.findOne({
+       where: {
+         quesID: attempt.quesID,
+         userID: userID
+       }
+     });
 
-    res.status(200).json({
-      user: signupResponse.user,
-      token: signupResponse.token,
-      message: "Sign in success"
-    });
-  } catch (err) {
-    console.log(err);
-    next(err);
-  }
+     if (unregisteredAttempt) {
+       await UnregisteredAttemptModel.destroy({
+         where: {
+           quesID: attempt.quesID,
+           userID: userID
+         }
+       });
+
+       const newAttemptData = {
+         quesID: attempt.quesID,
+         userID: signupResponse.user.userId,
+         attemptValue: unregisteredAttempt.attemptValue,
+         isCorrect: unregisteredAttempt.isCorrect,
+         firstAttempt: unregisteredAttempt.firstAttempt,
+         secondAttempt: unregisteredAttempt.secondAttempt,
+         thirdAttempt: unregisteredAttempt.thirdAttempt,
+         fourthAttempt: unregisteredAttempt.fourthAttempt
+       };
+
+       const existingAttempt = await AttemptModel.findOne({
+         where: {
+           quesID: attempt.quesID,
+           userID: signupResponse.user.userId
+         }
+       });
+
+       if (existingAttempt) {
+         await AttemptModel.update(newAttemptData, {
+           where: {
+             quesID: attempt.quesID,
+             userID: signupResponse.user.userId
+           }
+         });
+       } else {
+         await AttemptModel.create(newAttemptData);
+       }
+     }
+   }
+
+   res.status(200).json({
+     user: signupResponse.user,
+     token: signupResponse.token,
+     message: "Sign in success"
+   });
+ } catch (err) {
+   console.log(err);
+   next(err);
+ }
 };
 
 

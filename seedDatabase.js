@@ -177,7 +177,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Luxembourg",
       clueLatLong: { lat: "49.8 N", long: "6.1 E" },
-      clueFlag: "flag_lu.png",
+      clueFlag: "images/flags/lu.svg",
       clueCapital: "Luxembourg",
       wikiLink: "https://en.wikipedia.org/wiki/Luxembourg"
     }
@@ -194,7 +194,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Ecuador",
       clueLatLong: { lat: "1.8 S", long: "78.2 W" },
-      clueFlag: "flag_ec.png",
+      clueFlag: "images/flags/ec.svg",
       clueCapital: "Quito",
       wikiLink: "https://en.wikipedia.org/wiki/Ecuador"
     }
@@ -211,7 +211,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Uzbekistan",
       clueLatLong: { lat: "41.4 N", long: "64.6 E" },
-      clueFlag: "flag_uz.png",
+      clueFlag: "images/flags/uz.svg",
       clueCapital: "Tashkent",
       wikiLink: "https://en.wikipedia.org/wiki/Uzbekistan"
     }
@@ -228,7 +228,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Somalia",
       clueLatLong: { lat: "5.2 N", long: "46.2 E" },
-      clueFlag: "flag_so.png",
+      clueFlag: "images/flags/so.svg",
       clueCapital: "Mogadishu",
       wikiLink: "https://en.wikipedia.org/wiki/Somalia"
     }
@@ -245,7 +245,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Paraguay",
       clueLatLong: { lat: "23.4 S", long: "58.4 W" },
-      clueFlag: "flag_py.png",
+      clueFlag: "images/flags/py.svg",
       clueCapital: "Asunci�n",
       wikiLink: "https://en.wikipedia.org/wiki/Paraguay"
     }
@@ -262,7 +262,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Australia",
       clueLatLong: { lat: "25.3 S", long: "133.8 E" },
-      clueFlag: "flag_au.png",
+      clueFlag: "images/flags/au.svg",
       clueCapital: "Canberra",
       wikiLink: "https://en.wikipedia.org/wiki/Australia"
     }
@@ -279,7 +279,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Cambodia",
       clueLatLong: { lat: "12.6 N", long: "105 E" },
-      clueFlag: "flag_kh.png",
+      clueFlag: "images/flags/kh.svg",
       clueCapital: "Phnom Penh",
       wikiLink: "https://en.wikipedia.org/wiki/Cambodia"
     }
@@ -296,7 +296,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Kenya",
       clueLatLong: { lat: "0 S", long: "37.9 E" },
-      clueFlag: "flag_ke.png",
+      clueFlag: "images/flags/ke.svg",
       clueCapital: "Nairobi",
       wikiLink: "https://en.wikipedia.org/wiki/Kenya"
     }
@@ -313,7 +313,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Sri Lanka",
       clueLatLong: { lat: "7.9 N", long: "80.8 E" },
-      clueFlag: "flag_lk.png",
+      clueFlag: "images/flags/lk.svg",
       clueCapital: "Colombo (executive, judicial)",
       wikiLink: "https://en.wikipedia.org/wiki/Sri_Lanka"
     }
@@ -330,7 +330,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Norway",
       clueLatLong: { lat: "60.5 N", long: "8.5 E" },
-      clueFlag: "flag_no.png",
+      clueFlag: "images/flags/no.svg",
       clueCapital: "Oslo",
       wikiLink: "https://en.wikipedia.org/wiki/Norway"
     }
@@ -347,7 +347,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Namibia",
       clueLatLong: { lat: "23 S", long: "18.5 E" },
-      clueFlag: "flag_na.png",
+      clueFlag: "images/flags/na.svg",
       clueCapital: "Windhoek",
       wikiLink: "https://en.wikipedia.org/wiki/Namibia"
     }
@@ -364,7 +364,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Finland",
       clueLatLong: { lat: "61.9 N", long: "25.7 E" },
-      clueFlag: "flag_fi.png",
+      clueFlag: "images/flags/fi.svg",
       clueCapital: "Helsinki",
       wikiLink: "https://en.wikipedia.org/wiki/Finland"
     }
@@ -381,7 +381,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Guinea",
       clueLatLong: { lat: "9.9 N", long: "9.7 W" },
-      clueFlag: "flag_gn.png",
+      clueFlag: "images/flags/gn.svg",
       clueCapital: "Conakry",
       wikiLink: "https://en.wikipedia.org/wiki/Guinea"
     }
@@ -398,7 +398,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Brunei",
       clueLatLong: { lat: "4.5 N", long: "114.7 E" },
-      clueFlag: "flag_bn.png",
+      clueFlag: "images/flags/bn.svg",
       clueCapital: "Bandar Seri Begawan",
       wikiLink: "https://en.wikipedia.org/wiki/Brunei"
     }
@@ -415,7 +415,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Peru",
       clueLatLong: { lat: "9.2 S", long: "75 W" },
-      clueFlag: "flag_pe.png",
+      clueFlag: "images/flags/pe.svg",
       clueCapital: "Lima",
       wikiLink: "https://en.wikipedia.org/wiki/Peru"
     }
@@ -432,7 +432,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Turkmenistan",
       clueLatLong: { lat: "39 N", long: "59.6 E" },
-      clueFlag: "flag_tm.png",
+      clueFlag: "images/flags/tm.svg",
       clueCapital: "Ashgabat",
       wikiLink: "https://en.wikipedia.org/wiki/Turkmenistan"
     }
@@ -449,7 +449,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Bhutan",
       clueLatLong: { lat: "27.5 N", long: "90.4 E" },
-      clueFlag: "flag_bt.png",
+      clueFlag: "images/flags/bt.svg",
       clueCapital: "Thimphu",
       wikiLink: "https://en.wikipedia.org/wiki/Bhutan"
     }
@@ -466,7 +466,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Nepal",
       clueLatLong: { lat: "28.4 N", long: "84.1 E" },
-      clueFlag: "flag_np.png",
+      clueFlag: "images/flags/np.svg",
       clueCapital: "Kathmandu",
       wikiLink: "https://en.wikipedia.org/wiki/Nepal"
     }
@@ -483,7 +483,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Djibouti",
       clueLatLong: { lat: "11.8 N", long: "42.6 E" },
-      clueFlag: "flag_dj.png",
+      clueFlag: "images/flags/dj.svg",
       clueCapital: "Djibouti",
       wikiLink: "https://en.wikipedia.org/wiki/Djibouti"
     }
@@ -500,7 +500,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Kuwait",
       clueLatLong: { lat: "29.3 N", long: "47.5 E" },
-      clueFlag: "flag_kw.png",
+      clueFlag: "images/flags/kw.svg",
       clueCapital: "Kuwait City",
       wikiLink: "https://en.wikipedia.org/wiki/Kuwait"
     }
@@ -517,7 +517,7 @@ const questions = [
     CountryQuestion: {
       countryName: "China",
       clueLatLong: { lat: "35.9 N", long: "104.2 E" },
-      clueFlag: "flag_cn.png",
+      clueFlag: "images/flags/cn.svg",
       clueCapital: "Beijing",
       wikiLink: "https://en.wikipedia.org/wiki/China"
     }
@@ -534,7 +534,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Belize",
       clueLatLong: { lat: "17.2 N", long: "88.5 W" },
-      clueFlag: "flag_bz.png",
+      clueFlag: "images/flags/bz.svg",
       clueCapital: "Belmopan",
       wikiLink: "https://en.wikipedia.org/wiki/Belize"
     }
@@ -551,7 +551,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Bangladesh",
       clueLatLong: { lat: "23.7 N", long: "90.4 E" },
-      clueFlag: "flag_bd.png",
+      clueFlag: "images/flags/bd.svg",
       clueCapital: "Dhaka",
       wikiLink: "https://en.wikipedia.org/wiki/Bangladesh"
     }
@@ -568,7 +568,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Botswana",
       clueLatLong: { lat: "22.3 S", long: "24.7 E" },
-      clueFlag: "flag_bw.png",
+      clueFlag: "images/flags/bw.svg",
       clueCapital: "Gaborone",
       wikiLink: "https://en.wikipedia.org/wiki/Botswana"
     }
@@ -585,7 +585,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Poland",
       clueLatLong: { lat: "51.9 N", long: "19.1 E" },
-      clueFlag: "flag_pl.png",
+      clueFlag: "images/flags/pl.svg",
       clueCapital: "Warsaw",
       wikiLink: "https://en.wikipedia.org/wiki/Poland"
     }
@@ -602,7 +602,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Iraq",
       clueLatLong: { lat: "33.2 N", long: "43.7 E" },
-      clueFlag: "flag_iq.png",
+      clueFlag: "images/flags/iq.svg",
       clueCapital: "Baghdad",
       wikiLink: "https://en.wikipedia.org/wiki/Iraq"
     }
@@ -619,7 +619,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Vietnam",
       clueLatLong: { lat: "14.1 N", long: "108.3 E" },
-      clueFlag: "flag_vn.png",
+      clueFlag: "images/flags/vn.svg",
       clueCapital: "Hanoi",
       wikiLink: "https://en.wikipedia.org/wiki/Vietnam"
     }
@@ -636,7 +636,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Bosnia and Herzegovina",
       clueLatLong: { lat: "43.9 N", long: "17.7 E" },
-      clueFlag: "flag_ba.png",
+      clueFlag: "images/flags/ba.svg",
       clueCapital: "Sarajevo",
       wikiLink: "https://en.wikipedia.org/wiki/Bosnia_and_Herzegovina"
     }
@@ -653,7 +653,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Germany",
       clueLatLong: { lat: "51.2 N", long: "10.5 E" },
-      clueFlag: "flag_de.png",
+      clueFlag: "images/flags/de.svg",
       clueCapital: "Berlin",
       wikiLink: "https://en.wikipedia.org/wiki/Germany"
     }
@@ -670,7 +670,7 @@ const questions = [
     CountryQuestion: {
       countryName: "Chile",
       clueLatLong: { lat: "35.7 S", long: "71.5 W" },
-      clueFlag: "flag_cl.png",
+      clueFlag: "images/flags/cl.svg",
       clueCapital: "Santiago",
       wikiLink: "https://en.wikipedia.org/wiki/Chile"
     }

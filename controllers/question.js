@@ -40,13 +40,14 @@ exports.makeAttemptForUnregisteredUser = async (req, res, next) => {
     "Requested to /makeAttemptForUnregisteredUser with body: " + req.body
   );
   try {
-    const { attemptData, chooseValue, questionType } = req.body;
+    const { attemptData, chooseValue, questionType, userID } = req.body;
 
     const response = await Attempt.makeAttempt({
       chooseValue,
       questionType,
       isRegistered: false,
       attemptData,
+      userID
     });
     res.status(200).json(response);
   } catch (err) {

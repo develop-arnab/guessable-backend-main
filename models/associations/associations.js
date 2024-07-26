@@ -3,6 +3,7 @@ const CountryQuestion = require("../countryQuestions");
 const MovieQuestion = require("../movieQuestions");
 const User = require("../user");
 const Attempt = require("../attempts");
+const UnregisteredAttempt = require("../unregisteredAttempts"); 
 const db = require("../../databaseConfig/dbconfig");
 const QuestionStatsForUnregisteredUser = require("../questionStats");
 
@@ -35,6 +36,9 @@ Attempt.belongsTo(Question, { foreignKey: "quesID" });
 
 User.hasMany(Attempt, { foreignKey: "userID" });
 Attempt.belongsTo(User, { foreignKey: "userID" });
+
+Question.hasMany(UnregisteredAttempt, { foreignKey: "quesID" });
+UnregisteredAttempt.belongsTo(Question, { foreignKey: "quesID" });
 
 QuestionStatsForUnregisteredUser.belongsTo(Question, {
   foreignKey: "quesID",

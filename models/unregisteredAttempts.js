@@ -1,8 +1,8 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../databaseConfig/dbconfig");
 
-const Attempt = sequelize.define(
-  "Attempt",
+const UnregisteredAttempt = sequelize.define(
+  "UnregisteredAttempt",
   {
     attemptValue: {
       type: DataTypes.INTEGER,
@@ -21,12 +21,8 @@ const Attempt = sequelize.define(
       }
     },
     userID: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: "Users",
-        key: "userId"
-      }
+      type: DataTypes.STRING,
+      allowNull: false
     },
     firstAttempt: {
       type: DataTypes.STRING,
@@ -46,14 +42,8 @@ const Attempt = sequelize.define(
     }
   },
   {
-    timestamps: true,
-    indexes: [
-      {
-        unique: true,
-        fields: ["quesID", "userID"]
-      }
-    ]
+    timestamps: true
   }
 );
 
-module.exports = Attempt;
+module.exports = UnregisteredAttempt;

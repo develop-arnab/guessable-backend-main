@@ -4,6 +4,7 @@ const MovieQuestion = require("../models/movieQuestions");
 const QuestionModel = require("../models/questions");
 const User = require("../models/user");
 const QuestionStats = require("../models/questionStats");
+const UnregisteredAttemptModel = require("../models/unregisteredAttempts");
 
 const { QuestionsConstants } = require("../utils/constants");
 const Utils = require("../utils/utils");
@@ -16,6 +17,7 @@ class Attempt {
     questionType,
     attemptData,
     isRegistered,
+    userID
   }) {
     let attempt;
     if (isRegistered) {
@@ -51,21 +53,22 @@ class Attempt {
           date: attempt["Question.date"],
           clueMainBefore: attempt["Question.clueMainBefore"],
           clueImage: attempt["Question.clueImage"],
-          clueMainAfter: attempt["Question.clueMainAfter"],
+          clueMainAfter: attempt["Question.clueMainAfter"]
         },
-        firstAttempt : attempt.firstAttempt,
-        secondAttempt : attempt.secondAttempt,
-        thirdAttempt : attempt.thirdAttempt,
-        fourthAttempt : attempt.fourthAttempt
+        firstAttempt: attempt.firstAttempt,
+        secondAttempt: attempt.secondAttempt,
+        thirdAttempt: attempt.thirdAttempt,
+        fourthAttempt: attempt.fourthAttempt
       };
       attempt = restructuredAttempt;
     } else {
       attempt = attemptData;
+      attempt.userID = userID;
       const questionForGivenAttempt = await QuestionModel.findOne({
         where: {
-          id: attempt.quesID,
+          id: attempt.quesID
         },
-        raw: true,
+        raw: true
       });
       attempt.question = questionForGivenAttempt;
     }
@@ -94,7 +97,7 @@ class Attempt {
       error.statusCode = 404;
       throw error;
     }
-    questionData.clueMainAfter = attempt.question.clueMainAfter
+    questionData.clueMainAfter = attempt.question.clueMainAfter;
     let truthValue;
     var response = {};
     let updatedAttempt = attempt;
@@ -106,10 +109,10 @@ class Attempt {
 
     if (truthValue !== chooseValue.trim()) {
       response.isCorrect = false;
-      if(attempt.attemptValue){
-      attempt.attemptValue = parseInt(attempt.attemptValue);
+      if (attempt.attemptValue) {
+        attempt.attemptValue = parseInt(attempt.attemptValue);
       } else {
-        attempt.attemptValue = 0
+        attempt.attemptValue = 0;
       }
       if (attempt.attemptValue == QuestionsConstants.maxAttempts - 1) {
         console.info("Final attempt failed too");
@@ -137,7 +140,7 @@ class Attempt {
           questionType === QuestionsConstants.COUNTRY
             ? { LatLong: questionData.clueLatLong }
             : { releaseYear: questionData.clueYear };
-        updatedAttempt.firstAttempt = chooseValue
+        updatedAttempt.firstAttempt = chooseValue;
       } else if (attempt.attemptValue == 1) {
         updatedAttempt.attemptValue = 2;
         response.clueTwo =
@@ -151,7 +154,7 @@ class Attempt {
           questionType === QuestionsConstants.COUNTRY
             ? { capital: questionData.clueCapital }
             : { director: questionData.clueDirector };
-        updatedAttempt.thirdAttempt = chooseValue
+        updatedAttempt.thirdAttempt = chooseValue;
       }
       if (isRegistered) {
         await AttemptModel.update(
@@ -159,22 +162,42 @@ class Attempt {
             attemptValue: updatedAttempt.attemptValue,
             firstAttempt: updatedAttempt?.firstAttempt || null,
             secondAttempt: updatedAttempt?.secondAttempt || null,
-            thirdAttempt : updatedAttempt?.thirdAttempt || null,
-            fourthAttempt : updatedAttempt?.fourthAttempt || null,
+            thirdAttempt: updatedAttempt?.thirdAttempt || null,
+            fourthAttempt: updatedAttempt?.fourthAttempt || null
           },
           {
             where: { id: attemptDataId }
           }
         );
       } else {
-        const [record, created] = await QuestionStats.findOrCreate({
-          where: { quesID: questionData.quesID },
-          defaults: { quesID: questionData.quesID },
+        const [record, created] = await UnregisteredAttemptModel.findOrCreate({
+          where: {
+            quesID: updatedAttempt.quesID,
+            userID: updatedAttempt.userID
+          },
+          defaults: {
+            attemptValue: updatedAttempt.attemptValue,
+            isCorrect: updatedAttempt.isCorrect,
+            quesID: updatedAttempt.quesID,
+            userID: updatedAttempt.userID,
+            firstAttempt: updatedAttempt?.firstAttempt || null,
+            secondAttempt: updatedAttempt?.secondAttempt || null,
+            thirdAttempt: updatedAttempt?.thirdAttempt || null,
+            fourthAttempt: updatedAttempt?.fourthAttempt || null
+          }
         });
-        console.log(record,created)
-        console.log(updatedAttempt.attemptValue)
-        if (updatedAttempt.attemptValue == 1)
-          await record.increment("attemptsCount", { by: 1 });
+
+        if (!created) {
+          await record.update({
+            attemptValue: updatedAttempt.attemptValue,
+            isCorrect: updatedAttempt.isCorrect,
+            firstAttempt: updatedAttempt?.firstAttempt || record.firstAttempt,
+            secondAttempt:
+              updatedAttempt?.secondAttempt || record.secondAttempt,
+            thirdAttempt: updatedAttempt?.thirdAttempt || record.thirdAttempt,
+            fourthAttempt: updatedAttempt?.fourthAttempt || record.fourthAttempt
+          });
+        }
       }
     } else if (isRegistered && truthValue == chooseValue.trim()) {
       console.info(
@@ -219,24 +242,63 @@ class Attempt {
 
       return response;
     } else {
-      updatedAttempt.attemptValue =  updatedAttempt.attemptValue +1;
-      const [record, created] = await QuestionStats.findOrCreate({  
-        where: { quesID: questionData.quesID },
-        defaults: { quesID: questionData.quesID },
-      });
-      // Increment the correct values count if the attempt is correct
-      await record.increment("correctValues", { by: 1 });
-      if (updatedAttempt.attemptValue=== 1) {
-        await record.increment("attemptsCount", { by: 1 });
-        await record.increment("correctAtFirstAttempt", { by: 1 });
+      updatedAttempt.attemptValue = updatedAttempt.attemptValue + 1;
+
+      if (updatedAttempt.attemptValue === 1) {
+        updatedAttempt.firstAttempt = chooseValue;
       } else if (updatedAttempt.attemptValue === 2) {
-        await record.increment("correctAtSecondAttempt", { by: 1 });
+        updatedAttempt.secondAttempt = chooseValue;
       } else if (updatedAttempt.attemptValue === 3) {
-        await record.increment("correctAtThirdAttempt", { by: 1 });
+        updatedAttempt.thirdAttempt = chooseValue;
       } else if (updatedAttempt.attemptValue === 4) {
-        await record.increment("correctAtFourthAttempt", { by: 1 });
+        updatedAttempt.fourthAttempt = chooseValue;
       }
-      console.log(attempt)
+
+      const [record, created] = await UnregisteredAttemptModel.findOrCreate({
+        where: {
+          quesID: updatedAttempt.quesID,
+          userID: updatedAttempt.userID
+        },
+        defaults: {
+          attemptValue: updatedAttempt.attemptValue,
+          isCorrect: true,
+          quesID: updatedAttempt.quesID,
+          userID: updatedAttempt.userID,
+          firstAttempt: updatedAttempt?.firstAttempt || null,
+          secondAttempt: updatedAttempt?.secondAttempt || null,
+          thirdAttempt: updatedAttempt?.thirdAttempt || null,
+          fourthAttempt: updatedAttempt?.fourthAttempt || null
+        }
+      });
+
+      if (!created) {
+        await record.update({
+          attemptValue: updatedAttempt.attemptValue,
+          isCorrect: true,
+          firstAttempt: updatedAttempt?.firstAttempt || record.firstAttempt,
+          secondAttempt: updatedAttempt?.secondAttempt || record.secondAttempt,
+          thirdAttempt: updatedAttempt?.thirdAttempt || record.thirdAttempt,
+          fourthAttempt: updatedAttempt?.fourthAttempt || record.fourthAttempt
+        });
+      }
+
+      // const [record, created] = await QuestionStats.findOrCreate({
+      //   where: { quesID: questionData.quesID },
+      //   defaults: { quesID: questionData.quesID }
+      // });
+
+      // await record.increment("correctValues", { by: 1 });
+      // if (updatedAttempt.attemptValue === 1) {
+      //   await record.increment("attemptsCount", { by: 1 });
+      //   await record.increment("correctAtFirstAttempt", { by: 1 });
+      // } else if (updatedAttempt.attemptValue === 2) {
+      //   await record.increment("correctAtSecondAttempt", { by: 1 });
+      // } else if (updatedAttempt.attemptValue === 3) {
+      //   await record.increment("correctAtThirdAttempt", { by: 1 });
+      // } else if (updatedAttempt.attemptValue === 4) {
+      //   await record.increment("correctAtFourthAttempt", { by: 1 });
+      // }
+
       response = await this.postCorrectAnswer(
         questionType,
         questionData,
@@ -244,7 +306,7 @@ class Attempt {
       );
       response.clueMainAfter = questionData.clueMainAfter;
 
-      console.info(response);
+      // console.info(response);
       return response;
     }
 
@@ -277,7 +339,6 @@ class Attempt {
         : { director: questionData.clueDirector };
     response.clueMainAfter = questionData.clueMainAfter;
 
-
     return response;
   }
 
@@ -288,28 +349,28 @@ class Attempt {
 
     const countryQuestion = await QuestionModel.findOne({
       where: {
-        date: date,
+        date: date
       },
       include: [
         {
           model: CountryQuestion,
-          require: true,
-        },
+          require: true
+        }
       ],
-      raw: true,
+      raw: true
     });
 
     const movieQuestion = await QuestionModel.findOne({
       where: {
-        date: date,
+        date: date
       },
       include: [
         {
           model: MovieQuestion,
-          require: true,
-        },
+          require: true
+        }
       ],
-      raw: true,
+      raw: true
     });
 
     if (!countryQuestion || !movieQuestion) {
@@ -321,17 +382,17 @@ class Attempt {
     const countryAttempt = await AttemptModel.findOne({
       where: {
         quesID: countryQuestion.id,
-        userID: userId,
+        userID: userId
       },
-      raw: true,
+      raw: true
     });
 
     const movieAttempt = await AttemptModel.findOne({
       where: {
         quesID: movieQuestion.id,
-        userID: userId,
+        userID: userId
       },
-      raw: true,
+      raw: true
     });
 
     if (!countryAttempt || !movieAttempt) {
@@ -344,23 +405,55 @@ class Attempt {
 
     return {
       isCountryQuestionAttempted: countryAttempt.isCorrect,
-      isMovieQuestionAttempted: movieAttempt.isCorrect,
+      isMovieQuestionAttempted: movieAttempt.isCorrect
     };
   }
 
   static async saveAttemptData(attemptDataArr, userId) {
-      const attempts = attemptDataArr.map((attempt) => ({
-        attemptValue: attempt.attemptValue,
-        isCorrect: attempt.isCorrect,
-        quesID: attempt.quesID,
-        userID: userId,
-        firstAttempt: attempt.firstAttempt,
-        secondAttempt: attempt.secondAttempt,
-        thirdAttempt: attempt.thirdAttempt,
-        fourthAttempt: attempt.fourthAttempt
-      }));
+    const attempts = attemptDataArr.map((attempt) => ({
+      attemptValue: attempt.attemptValue,
+      isCorrect: attempt.isCorrect,
+      quesID: attempt.quesID,
+      userID: userId,
+      firstAttempt: attempt.firstAttempt,
+      secondAttempt: attempt.secondAttempt,
+      thirdAttempt: attempt.thirdAttempt,
+      fourthAttempt: attempt.fourthAttempt
+    }));
 
-      await AttemptModel.bulkCreate(attempts);
+    await AttemptModel.bulkCreate(attempts);
+  }
+  static async saveOrUpdateAttemptData(unregisteredAttempt, userId) {
+    const existingAttempt = await AttemptModel.findOne({
+      where: {
+        quesID: unregisteredAttempt.quesID,
+        userID: userId
+      }
+    });
+
+  if (existingAttempt) {
+    // Update the existing attempt
+    await existingAttempt.update({
+      attemptValue: unregisteredAttempt.attemptValue,
+      isCorrect: unregisteredAttempt.isCorrect,
+      firstAttempt: unregisteredAttempt.firstAttempt,
+      secondAttempt: unregisteredAttempt.secondAttempt,
+      thirdAttempt: unregisteredAttempt.thirdAttempt,
+      fourthAttempt: unregisteredAttempt.fourthAttempt
+    });
+  } else {
+    // Create a new attempt
+    await AttemptModel.create({
+      quesID: unregisteredAttempt.quesID,
+      userID: userId,
+      attemptValue: unregisteredAttempt.attemptValue,
+      isCorrect: unregisteredAttempt.isCorrect,
+      firstAttempt: unregisteredAttempt.firstAttempt,
+      secondAttempt: unregisteredAttempt.secondAttempt,
+      thirdAttempt: unregisteredAttempt.thirdAttempt,
+      fourthAttempt: unregisteredAttempt.fourthAttempt
+    });
+  }
   }
 }
 

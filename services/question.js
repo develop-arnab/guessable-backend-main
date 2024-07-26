@@ -6,6 +6,7 @@ const CountryQuestion = require("../models/countryQuestions");
 const MovieQuestion = require("../models/movieQuestions");
 const { QuestionsConstants } = require("../utils/constants");
 const QuestionStatsForUnregisteredUser = require("../models/questionStats");
+const UnregisteredAttempt = require("../models/unregisteredAttempts");
 const { response } = require("express");
 
 class Question {
@@ -18,13 +19,13 @@ class Question {
       include: [
         {
           model: this.model,
-          required: true,
-        },
+          required: true
+        }
       ],
       where: {
-        date: date,
+        date: date
       },
-      raw: true,
+      raw: true
     });
     if (!question) {
       const error = new Error("Could not find the Question");
@@ -34,16 +35,16 @@ class Question {
     let attempt = await Attempt.findOne({
       where: {
         userID: userId,
-        quesID: question.id,
+        quesID: question.id
       },
-      raw: true,
+      raw: true
     });
 
     // Create a new attempt if it doesn't exist
     if (!attempt) {
       attempt = await Attempt.create({
         userID: userId,
-        quesID: question.id,
+        quesID: question.id
       });
 
       // Extract raw response
@@ -59,7 +60,7 @@ class Question {
   async getQuestionByCurrentdate(userId) {
     const user = await User.findByPk(userId, {
       attributes: ["timeZone"],
-      raw: true,
+      raw: true
     });
     const date = Utils.getCurrentDate(user.timeZone);
     const question = await this.getQuestion(date, userId);
@@ -69,9 +70,9 @@ class Question {
   async getQuestionById(id) {
     const question = await this.model.findOne({
       where: {
-        quesID: id,
+        quesID: id
       },
-      raw: true,
+      raw: true
     });
     return question;
   }
@@ -82,11 +83,11 @@ class Question {
         {
           model: QuestionModel,
           where: { id: quesId }, // Condition to match quesID with Question id
-          attributes: ["id"], // Specify the attributes you want to retrieve from the QuestionModel
-        },
+          attributes: ["id"] // Specify the attributes you want to retrieve from the QuestionModel
+        }
       ],
       attributes: ["id", "attemptValue", "isCorrect"], // Specify the attributes you want to retrieve from the Attempt model
-      raw: true,
+      raw: true
     });
 
     if (!questionAttemptsData || questionAttemptsData.length === 0) {
@@ -95,7 +96,7 @@ class Question {
       // );
       // error.statusCode = 404;
       // throw error;
-      return 0
+      return 0;
     }
     console.log("AttempData: ", questionAttemptsData);
     // Initialize counters for each attempt value
@@ -104,7 +105,7 @@ class Question {
       2: 0,
       3: 0,
       4: 0,
-      5: 0, //could not give correct answer
+      5: 0 //could not give correct answer
     };
 
     // Count the number of correct attempts for each attempt value
@@ -135,59 +136,65 @@ class Question {
   }
 
   // Function to get stats for unregistered users
-  static async getQuestionStatsForUnregisteredAttempts(questionId) {
-    const stats = await QuestionStatsForUnregisteredUser.findOne({
-      where: { quesID: questionId },
-      raw: true,
+  static async getQuestionStatsForUnregisteredAttempts(quesId) {
+    const unregisteredAttemptsData = await UnregisteredAttempt.findAll({
+      include: [
+        {
+          model: QuestionModel,
+          where: { id: quesId },
+          attributes: ["id"]
+        }
+      ],
+      attributes: ["id", "attemptValue", "isCorrect"],
+      raw: true
     });
-    if (!stats) {
+
+    if (!unregisteredAttemptsData || unregisteredAttemptsData.length === 0) {
       return {
         "Attempt 1": "0.00%",
         "Attempt 2": "0.00%",
         "Attempt 3": "0.00%",
         "Attempt 4": "0.00%",
         "Could not give correct answer": "0.00%",
-        totalAttempts: 0,
+        totalAttempts: 0
       };
     }
-    const totalAttempts = stats.attemptsCount;
-    const totalCorrectAtFirstAttempt = stats.correctAtFirstAttempt;
-    const totalCorrectAtSecondAttempt = stats.correctAtSecondAttempt;
-    const totalCorrectAtThirdAttempt = stats.correctAtThirdAttempt;
-    const totalCorrectAtFourthAttempt = stats.correctAtFourthAttempt;
-    const totalCouldNotGiveCorrectAnswer =
-      totalAttempts -
-      (totalCorrectAtFirstAttempt +
-        totalCorrectAtSecondAttempt +
-        totalCorrectAtThirdAttempt +
-        totalCorrectAtFourthAttempt);
 
-    const calculatePercentage = (value, total) =>
-      total === 0 ? "0.00%" : ((value / total) * 100).toFixed(2) + "%";
-
-    return {
-      "Attempt 1": calculatePercentage(
-        totalCorrectAtFirstAttempt,
-        totalAttempts
-      ),
-      "Attempt 2": calculatePercentage(
-        totalCorrectAtSecondAttempt,
-        totalAttempts
-      ),
-      "Attempt 3": calculatePercentage(
-        totalCorrectAtThirdAttempt,
-        totalAttempts
-      ),
-      "Attempt 4": calculatePercentage(
-        totalCorrectAtFourthAttempt,
-        totalAttempts
-      ),
-      "Could not give correct answer": calculatePercentage(
-        totalCouldNotGiveCorrectAnswer,
-        totalAttempts
-      ),
-      totalAttempts: totalAttempts,
+    const attemptCounts = {
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0,
+      5: 0
     };
+
+    unregisteredAttemptsData.forEach((attempt) => {
+      if (attempt.isCorrect) {
+        attemptCounts[attempt.attemptValue]++;
+      } else {
+        attemptCounts[5]++;
+      }
+    });
+
+    const totalAttempts = unregisteredAttemptsData.length;
+
+    const stats = {};
+    for (let attemptValue = 1; attemptValue <= 4; attemptValue++) {
+      const solvedCount = attemptCounts[attemptValue];
+      const percentage = (solvedCount / totalAttempts) * 100;
+      stats[`Attempt ${attemptValue}`] = `${percentage.toFixed(2)}%`;
+    }
+
+    const solvedCount = attemptCounts[5];
+    const percentage = (solvedCount / totalAttempts) * 100;
+    stats["Could not give correct answer"] = `${percentage.toFixed(2)}%`;
+    console.info(
+      `Stats for question id: ${quesId} (unregistered): ${JSON.stringify(
+        stats
+      )}`
+    );
+    stats.totalAttempts = totalAttempts;
+    return stats;
   }
 
   static combineResponses(response1, response2) {
@@ -221,15 +228,15 @@ class Question {
   async getQuestionByDate(date, userId, isRegistered) {
     const question = await QuestionModel.findOne({
       where: {
-        date: date,
+        date: date
       },
       include: [
         {
           model: this.model,
-          required: true,
-        },
+          required: true
+        }
       ],
-      raw: true,
+      raw: true
     });
 
     if (!question) {
@@ -242,15 +249,15 @@ class Question {
       let attempt = await Attempt.findOne({
         where: {
           userID: userId,
-          quesID: question.id,
+          quesID: question.id
         },
-        raw: true,
+        raw: true
       });
       // Create a new attempt if it doesn't exist
       if (!attempt) {
         attempt = await Attempt.create({
           userID: userId,
-          quesID: question.id,
+          quesID: question.id
         });
         // Extract raw response
         attempt = attempt.get({ plain: true });
@@ -269,13 +276,13 @@ class Question {
       include: [
         {
           model: this.model,
-          required: true,
-        },
+          required: true
+        }
       ],
       where: {
-        date: date,
+        date: date
       },
-      raw: true,
+      raw: true
     });
     if (!question) {
       const error = new Error("Could not find the Question");
@@ -294,10 +301,10 @@ class Question {
         : { model: MovieQuestion };
     const question = await QuestionModel.findOne({
       where: {
-        date: date,
+        date: date
       },
       include: [model],
-      raw: true,
+      raw: true
     });
     if (!question) {
       const error = new Error("Could not find the Question");
@@ -308,14 +315,14 @@ class Question {
     let attempt = await Attempt.findOne({
       where: {
         userID: userId,
-        quesID: question.id,
+        quesID: question.id
       },
-      raw: true,
+      raw: true
     });
     if (!attempt) {
       attempt = await Attempt.create({
         userID: userId,
-        quesID: question.id,
+        quesID: question.id
       });
       attempt = attempt.get({ plain: true });
     }
@@ -329,19 +336,19 @@ class Question {
         {
           model: this.model,
           required: true,
-          attributes: [],
+          attributes: []
         },
         {
           model: Attempt,
           required: true,
           attributes: ["id", "attemptValue", "isCorrect"],
           where: {
-            userId: userId,
-          },
-        },
+            userId: userId
+          }
+        }
       ],
       attributes: ["id"],
-      raw: true,
+      raw: true
     });
     console.log(questions);
 
@@ -405,7 +412,7 @@ class Question {
       guessDistribution,
       played: totalAttempts,
       winPercentage: winPercentage.toFixed(2),
-      averageScore: averageScore.toFixed(2),
+      averageScore: averageScore.toFixed(2)
     };
   }
 }
