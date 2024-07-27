@@ -12,7 +12,7 @@ const Question = sequelize.define(
       allowNull: false
     },
     clueMainBefore: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false
     },
     clueImage: {
@@ -20,7 +20,7 @@ const Question = sequelize.define(
       allowNull: false
     },
     clueMainAfter: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false
     }
   },

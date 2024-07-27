@@ -80,6 +80,7 @@ exports.signupWithGameData = async (req, res, next) => {
    await UserServices.setStreaks({
      countryStreak: streaks.countryStreak,
      movieStreak: streaks.movieStreak,
+     peopleStreak: streaks.peopleStreak,
      userId: signupResponse.user.userId
    });
 
@@ -167,6 +168,16 @@ exports.getAllMovies = async (req, res, next) => {
   try {
     const movies = await UserServices.getAllMovies();
     res.status(200).json(movies);
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
+
+exports.getAllPeople = async (req, res, next) => {
+  try {
+    const people = await UserServices.getAllpeople();
+    res.status(200).json(people);
   } catch (err) {
     console.log(err);
     next(err);

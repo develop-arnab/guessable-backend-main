@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const Country = require("../models/countryQuestions");
 const Movie = require("../models/movieQuestions");
+const People = require("../models/peopleQuestions");
 const bcrypt = require("bcrypt");
 const { QuestionsConstants } = require("../utils/constants");
 const Question = require("./question");
@@ -39,7 +40,7 @@ class UserServices {
       name,
       email,
       password: hashedPassword,
-      timeZone: timezone,
+      timeZone: timezone
     });
     // Generate JWT token
     const token = UserServices.getJwtToken(user);
@@ -47,7 +48,7 @@ class UserServices {
     delete user.password;
     const response = {
       user,
-      token: token,
+      token: token
     };
 
     return response;
@@ -64,7 +65,7 @@ class UserServices {
     // Find user by email
     let user = await User.findOne({
       where: { email },
-      raw: true,
+      raw: true
     });
     if (!user) {
       const error = new Error("Could not find the user");
@@ -138,7 +139,8 @@ class UserServices {
       email: user.email,
       additionalData: user.additionalData,
       countryStreak: user.countryStreak,
-      movieStreak: user.movieStreak
+      movieStreak: user.movieStreak,
+      peopleStreak: user.peopleStreak,
     };
     const token = UserServices.getJwtToken(user);
 
@@ -210,16 +212,18 @@ class UserServices {
       maxStreak: user.maxStreak
     };
   }
-  static async setStreaks({ countryStreak, movieStreak, userId }) {
+  static async setStreaks({ countryStreak, movieStreak, peopleStreak, userId }) {
     const user = await User.findByPk(userId);
 
     if (user) {
       if (countryStreak !== undefined) user.countryStreak = countryStreak;
       if (movieStreak !== undefined) user.movieStreak = movieStreak;
+      if (peopleStreak !== undefined) user.peopleStreak = peopleStreak;
       user.maxStreak = UserServices.getMaxStreak(
         user.maxStreak,
         user.countryStreak,
-        user.movieStreak
+        user.movieStreak,
+        user.peopleStreak
       );
 
       await user.save();
@@ -304,10 +308,10 @@ class UserServices {
     return job;
   }
 
-  static getMaxStreak(maxStreak, countryStreak, movieStreak, userId) {
+  static getMaxStreak(maxStreak, countryStreak, movieStreak, peopleStreak, userId) {
     console.log(maxStreak, countryStreak, movieStreak);
     if (!maxStreak) {
-      maxStreak = { countryStreak: 0, movieStreak: 0 };
+      maxStreak = { countryStreak: 0, movieStreak: 0, peopleStreak : 0 };
     }
 
     const updatedMaxCountryStreak =
@@ -317,9 +321,15 @@ class UserServices {
     const updatedMaxMovieStreak =
       movieStreak > maxStreak.movieStreak ? movieStreak : maxStreak.movieStreak;
 
+    const updatedMaxpeopleStreak =
+      peopleStreak > maxStreak.peopleStreak
+        ? peopleStreak
+        : maxStreak.peopleStreak;
+
     const updatedStreak = {
       countryStreak: updatedMaxCountryStreak,
-      movieStreak: updatedMaxMovieStreak
+      movieStreak: updatedMaxMovieStreak,
+      peopleStreak : updatedMaxpeopleStreak
     };
     console.log("updatedStreak", updatedStreak);
     return updatedStreak;
@@ -340,7 +350,21 @@ class UserServices {
       throw err;
     }
   };
-
+  static getAllpeople = async () => {
+    try {
+      const people = await People.findAll({
+        attributes: ["personName"],
+        group: ["personName"]
+      });
+      return people.map((person) => ({
+        value: person.personName,
+        label: person.personName
+      }));
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  };
   static getAllMovies = async () => {
     try {
       const movies = await Movie.findAll({

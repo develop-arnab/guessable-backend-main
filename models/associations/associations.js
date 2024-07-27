@@ -1,6 +1,7 @@
 const Question = require("../questions");
 const CountryQuestion = require("../countryQuestions");
 const MovieQuestion = require("../movieQuestions");
+const PeopleQuestion = require("../peopleQuestions");
 const User = require("../user");
 const Attempt = require("../attempts");
 const UnregisteredAttempt = require("../unregisteredAttempts"); 
@@ -19,6 +20,11 @@ MovieQuestion.belongsTo(Question, {
   constraints: false,
 });
 
+PeopleQuestion.belongsTo(Question, {
+  foreignKey: "quesID",
+  constraints: false
+});
+
 // Question association with CountryQuestion
 Question.hasOne(CountryQuestion, {
   foreignKey: "quesID",
@@ -29,6 +35,11 @@ Question.hasOne(CountryQuestion, {
 Question.hasOne(MovieQuestion, {
   foreignKey: "quesID",
   constraints: false,
+});
+
+Question.hasOne(PeopleQuestion, {
+  foreignKey: "quesID",
+  constraints: false
 });
 
 Question.hasMany(Attempt, { foreignKey: "quesID" });

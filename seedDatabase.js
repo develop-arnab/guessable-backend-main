@@ -5,6 +5,7 @@ const CountryQuestion = require("./models/countryQuestions");
 const MovieQuestion = require("./models/movieQuestions");
 
 const Attempt = require("./models/attempts");
+const PeopleQuestion = require("./models/peopleQuestions");
 
 async function seedDatabase() {
   // Sync models in order of dependencies
@@ -1201,12 +1202,64 @@ const questions = [
       clueCast: "cast Friends with Benefits",
       imdbLink: "https://www.imdb.com/title/tt1632708/"
     }
-  }
+  },
+  {
+    date: "2024-07-22",
+    clueMainBefore:
+      "X graduated from Keble College, Oxford. He began his international cricket career in 1971 and played until 1992, serving as the national team's captain intermittently between 1982 and 1992. X was later inducted into the ICC Cricket Hall of Fame. He founded a political party in 1996 and won a seat in the National Assembly in the 2002 general election, serving as an opposition member until 2007. In the 2018 general election, running on a populist platform, his party became the largest party in the National Assembly and formed a coalition government with independents with X as prime minister. ",
+    clueImage: "sample_image.jpg",
+    clueMainAfter:
+      "Imran Khan graduated from Keble College, Oxford. He began his international cricket career in 1971 and played until 1992, serving as the national team's captain intermittently between 1982 and 1992. Khan was later inducted into the ICC Cricket Hall of Fame. He founded Pakistan Tehreek-e-Insaf (PTI) in 1996 and won a seat in the National Assembly in the 2002 general election, serving as an opposition member until 2007. In the 2018 general election, running on a populist platform, PTI became the largest party in the National Assembly and formed a coalition government with independents with Khan as prime minister. ",
+    category: "people",
+    answer: "Imran Khan",
+    PeopleQuestion: {
+      personName: "Imran Khan",
+      clueNationality: "Pakistan",
+      clueLifespan: "1952 - ",
+      clueInitials: "IK",
+      wikiLink: "https://en.wikipedia.org/wiki/Imran_Khan"
+    }
+  },
+  {
+    date: "2024-07-23",
+    clueMainBefore:
+      "X had a religious conversion experience after embarking on a pilgrimage to a monastery. He later travelled to Saint Petersburg and captivated a number of religious and social leaders, eventually becoming a prominent figure in Russian society. In November 1905, he met Nicholas II and his empress consort, Alexandra Feodorovna. He began acting as a faith healer for Nicholas' and Alexandra's only son, Alexei Nikolaevich, who suffered from haemophilia. He was a divisive figure at court, seen by some as a mystic, visionary and prophet, and by others as a religious charlatan.",
+    clueImage: "sample_image.jpg",
+    clueMainAfter:
+      "Rasputin had a religious conversion experience after embarking on a pilgrimage to a monastery. He later travelled to Saint Petersburg and captivated a number of religious and social leaders, eventually becoming a prominent figure in Russian society. In November 1905, Rasputin met Nicholas II and his empress consort, Alexandra Feodorovna. He began acting as a faith healer for Nicholas' and Alexandra's only son, Alexei Nikolaevich, who suffered from haemophilia. He was a divisive figure at court, seen by some as a mystic, visionary and prophet, and by others as a religious charlatan.",
+    category: "people",
+    answer: "Grigori Rasputin",
+    PeopleQuestion: {
+      personName: "Grigori Rasputin",
+      clueNationality: "Russia",
+      clueLifespan: "1869 - 1916",
+      clueInitials: "GR",
+      wikiLink: "https://en.wikipedia.org/wiki/Grigori_Rasputin"
+    }
+  },
+  {
+    date: "2024-07-24",
+    clueMainBefore:
+      'X was nicknamed the "Austrian Oak" in his bodybuilding days, "_____"  during his acting career, and "the Governator" during his political career. He married Maria Shriver, a niece of the former U.S. President John F. Kennedy, in 1986. They separated in 2011 after he admitted to having fathered a child with their housemaid in 1997.',
+    clueImage: "sample_image.jpg",
+    clueMainAfter:
+      'Arnold Schwarzenegger was nicknamed the "Austrian Oak" in his bodybuilding days, "Arnie" or during his acting career, and "the Governator" (a portmanteau of "Governor" and "Terminator") during his political career. He married Maria Shriver, a niece of the former U.S. President John F. Kennedy, in 1986. They separated in 2011 after he admitted to having fathered a child with their housemaid in 1997',
+    category: "people",
+    answer: "Arnold Shwarzenegger",
+    PeopleQuestion: {
+      personName: "Arnold Shwarzenegger",
+      clueNationality: "Austrian / American",
+      clueLifespan: "1947 - ",
+      clueInitials: "AS",
+      wikiLink: "https://en.wikipedia.org/wiki/Arnold_Schwarzenegger"
+    }
+  },
 ];
   for (const questionData of questions) {
     const {
       CountryQuestion: countryData,
       MovieQuestion: movieData,
+      PeopleQuestion: peopleData,
       ...question
     } = questionData;
     const createdQuestion = await Question.create(question);
@@ -1223,6 +1276,12 @@ const questions = [
       await MovieQuestion.create({
         ...movieData,
         clueCast: JSON.stringify(movieData.clueCast),
+        quesID: createdQuestion.id
+      });
+    }
+    if (peopleData) {
+      await PeopleQuestion.create({
+        ...peopleData,
         quesID: createdQuestion.id
       });
     }

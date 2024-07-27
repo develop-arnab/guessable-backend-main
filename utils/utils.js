@@ -26,7 +26,7 @@ class Utils {
     const formattedDate = `${parts[4].value}-${parts[0].value}-${parts[2].value}`;
      console.log("Timezone DATE");
     return formattedDate;
-    // return "2024-07-26"; 
+    // return "2024-07-22"; 
   }
 
   static getPreviousDayDate(timezone) {
@@ -57,6 +57,9 @@ class Utils {
     } else if (type == QuestionsConstants.MOVIE) {
       const MovieQuestion = require("../services/movieQuesion");
       return new MovieQuestion();
+    } else if (type == QuestionsConstants.PEOPLE) {
+      const PeopleQuestion = require("../services/peopleQuestion");
+      return new PeopleQuestion();
     } else {
       throw Error("Bad argument: " + type);
     }

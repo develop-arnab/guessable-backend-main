@@ -34,4 +34,5 @@ router.post("/signupWithGameData", UserController.signupWithGameData);
 router.get("/getStreaks", auth, UserController.getStreaks);
 router.get("/getAllCountries", UserController.getAllCountries);
 router.get("/getAllMovies", UserController.getAllMovies);
+router.get("/getAllPeople", UserController.getAllPeople);
 module.exports = router;

@@ -105,6 +105,8 @@ class Attempt {
       truthValue = questionData.countryName;
     } else if (questionType === QuestionsConstants.MOVIE) {
       truthValue = questionData.movieName;
+    } else if (questionType === QuestionsConstants.PEOPLE) {
+      truthValue = questionData.personName;
     }
 
     if (truthValue !== chooseValue.trim()) {
@@ -120,7 +122,8 @@ class Attempt {
         response.answer =
           questionType === QuestionsConstants.COUNTRY
             ? questionData.countryName
-            : questionData.movieName;
+            : questionType === QuestionsConstants.MOVIE
+            ? questionData.movieName : questionData.personName;
         updatedAttempt.fourthAttempt = chooseValue;
         response.clueMainAfter = questionData.clueMainAfter;
         if (isRegistered) {
@@ -139,21 +142,27 @@ class Attempt {
         response.clueOne =
           questionType === QuestionsConstants.COUNTRY
             ? { LatLong: questionData.clueLatLong }
-            : { releaseYear: questionData.clueYear };
+            : questionType === QuestionsConstants.MOVIE
+            ? { releaseYear: questionData.clueYear }
+            : { nationality: questionData.clueNationality };
         updatedAttempt.firstAttempt = chooseValue;
       } else if (attempt.attemptValue == 1) {
         updatedAttempt.attemptValue = 2;
         response.clueTwo =
           questionType === QuestionsConstants.COUNTRY
             ? { flag: questionData.clueFlag }
-            : { cast: questionData.clueCast };
+            : questionType === QuestionsConstants.MOVIE
+            ? { releaseYear: questionData.clueCast }
+            : { lifespan: questionData.clueLifespan };
         updatedAttempt.secondAttempt = chooseValue;
       } else if (attempt.attemptValue == 2) {
         updatedAttempt.attemptValue = 3;
         response.clueThree =
           questionType === QuestionsConstants.COUNTRY
             ? { capital: questionData.clueCapital }
-            : { director: questionData.clueDirector };
+            : questionType === QuestionsConstants.MOVIE
+            ? { releaseYear: questionData.clueDirector }
+            : { initials: questionData.clueInitials };
         updatedAttempt.thirdAttempt = chooseValue;
       }
       if (isRegistered) {
@@ -323,20 +332,28 @@ class Attempt {
     response.answer =
       questionType === QuestionsConstants.COUNTRY
         ? questionData.countryName
-        : questionData.movieName;
+        : questionType === QuestionsConstants.MOVIE
+        ? questionData.movieName
+        : questionData.personName;
     response.clueOne =
       questionType === QuestionsConstants.COUNTRY
         ? { LatLong: questionData.clueLatLong }
-        : { releaseYear: questionData.clueYear };
+        : questionType === QuestionsConstants.MOVIE
+        ? { releaseYear: questionData.clueYear }
+        : { nationality: questionData.clueNationality };
     response.clueTwo =
       questionType === QuestionsConstants.COUNTRY
         ? { flag: questionData.clueFlag }
-        : { cast: questionData.clueCast };
+        : questionType === QuestionsConstants.MOVIE
+        ? { cast: questionData.clueCast }
+        : { lifespan: questionData.clueLifespan };
 
     response.clueThree =
       questionType === QuestionsConstants.COUNTRY
         ? { capital: questionData.clueCapital }
-        : { director: questionData.clueDirector };
+        : questionType === QuestionsConstants.MOVIE
+        ? { director: questionData.clueDirector }
+        : { initials: questionData.clueInitials };
     response.clueMainAfter = questionData.clueMainAfter;
 
     return response;
