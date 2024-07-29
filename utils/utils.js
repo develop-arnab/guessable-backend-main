@@ -26,7 +26,7 @@ class Utils {
     const formattedDate = `${parts[4].value}-${parts[0].value}-${parts[2].value}`;
      console.log("Timezone DATE");
     return formattedDate;
-    // return "2024-07-22"; 
+    // return "2024-08-05"; 
   }
 
   static getPreviousDayDate(timezone) {

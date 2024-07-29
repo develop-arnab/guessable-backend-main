@@ -7,8 +7,12 @@ class PeopleQuestion extends Question {
   }
 
   async getQuestion(date, userId) {
-    let question = await super.getQuestion(date, userId);
-    return this.createQuestionResponse(question);
+    try {
+      let question = await super.getQuestion(date, userId);
+      return this.createQuestionResponse(question);
+    } catch (e) {
+      return undefined;
+    }
   }
 
   async getQuestionByDate(date, userId, isRegistered) {
@@ -18,11 +22,13 @@ class PeopleQuestion extends Question {
 
   async getQuestionForUnregisteredUser(date) {
     console.log("movie question get question for unregistered user");
+    try{
     let question = await super.getQuestionForUnregisteredUser(date);
     if (!question) {
       let error = new Error("Could not fetch question please try again!");
-      error.statusCode = 404;
-      throw error;
+      // error.statusCode = 404;
+      // throw error;
+      return undefined
     }
 
     const response = {
@@ -35,6 +41,9 @@ class PeopleQuestion extends Question {
     };
 
     return response;
+  } catch(e){
+    return undefined
+  }
   }
 
   createQuestionResponse(question) {
@@ -75,6 +84,21 @@ class PeopleQuestion extends Question {
     if (attemptInfo.isCorrect || attemptValue == 4) {
       response.answer = question["PeopleQuestion.clueInitials"];
       response.clueMainAfter = question.clueMainAfter;
+      attemptInfo.clueOne = {
+        Year: question["PeopleQuestion.personName"]
+      };
+      attemptInfo.clueTwo = {
+        Director: question["PeopleQuestion.clueNationality"]
+      };
+      attemptInfo.clueThree = {
+        Cast: question["PeopleQuestion.clueLifespan"]
+      };
+      response.allResponses = [
+        attempt.firstAttempt,
+        attempt.secondAttempt,
+        attempt.thirdAttempt,
+        attempt.fourthAttempt
+      ]; 
     }
 
     response = {

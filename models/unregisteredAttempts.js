@@ -22,7 +22,7 @@ const UnregisteredAttempt = sequelize.define(
     },
     userID: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     firstAttempt: {
       type: DataTypes.STRING,

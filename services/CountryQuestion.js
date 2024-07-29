@@ -6,8 +6,12 @@ class CountryQuestion extends Question {
     super(CountryQuestionModel);
   }
   async getQuestion(date, userId) {
-    let question = await super.getQuestion(date, userId);
-    return this.createQuestionResponse(question);
+    try {
+      let question = await super.getQuestion(date, userId);
+      return this.createQuestionResponse(question);
+    } catch(e){
+      return undefined
+    }
   }
 
   async getQuestionByDate(date, userId, isRegistered) {
@@ -17,11 +21,13 @@ class CountryQuestion extends Question {
 
   async getQuestionForUnregisteredUser(date) {
     console.log("country question get question for unregistered user");
+    try{
     let question = await super.getQuestionForUnregisteredUser(date);
     if (!question) {
       let error = new Error("Could not fetch question please try again!");
-      error.statusCode = 404;
-      throw error;
+      // error.statusCode = 404;
+      // throw error;
+      return undefined;
     }
 
     let response = {
@@ -33,6 +39,9 @@ class CountryQuestion extends Question {
     };
 
     return response;
+  } catch(e){
+    return undefined
+  }
   }
 
   createQuestionResponse(question) {
@@ -40,8 +49,8 @@ class CountryQuestion extends Question {
     // Check if question is empty or not an array
     if (!question) {
       let error = new Error("Could not fetch question please try again!");
-      error.statusCode = 404;
-      throw error;
+      error.statusCode = 200;
+      // throw error;
     }
 
     // Construct response object
@@ -53,26 +62,41 @@ class CountryQuestion extends Question {
     let attemptValue = attempt.attemptValue;
     attemptInfo.maxAttempts = QuestionsConstants.maxAttempts;
     attemptInfo.isCorrect = attempt.isCorrect;
-    if (attemptValue >= 1) {
-      attemptInfo.clueOne = {
-        LatLong: question["CountryQuestion.clueLatLong"],
-      };
-    }
+      if (attemptValue >= 1) {
+        attemptInfo.clueOne = {
+          LatLong: question["CountryQuestion.clueLatLong"]
+        };
+      }
 
-    if (attemptValue >= 2) {
-      attemptInfo.clueTwo = {
-        Flag: question["CountryQuestion.clueFlag"],
-      };
-    }
+      if (attemptValue >= 2) {
+        attemptInfo.clueTwo = {
+          Flag: question["CountryQuestion.clueFlag"]
+        };
+      }
 
-    if (attemptValue >= 3) {
-      attemptInfo.clueThree = {
-        Capital: question["CountryQuestion.clueCapital"],
-      };
-    }
-    if (attempt.isCorrect || attemptValue == 4) {
-      response.clueMainAfter = question.clueMainAfter;
-      response.answer = question["CountryQuestion.countryName"];
+      if (attemptValue >= 3) {
+        attemptInfo.clueThree = {
+          Capital: question["CountryQuestion.clueCapital"]
+        };
+      }
+      if (attempt.isCorrect || attemptValue == 4) {
+        attemptInfo.clueOne = {
+          LatLong: question["CountryQuestion.clueLatLong"]
+        };
+        attemptInfo.clueTwo = {
+          Flag: question["CountryQuestion.clueFlag"]
+        };
+        attemptInfo.clueThree = {
+          Capital: question["CountryQuestion.clueCapital"]
+        };
+        response.answer = question["CountryQuestion.countryName"];
+        response.clueMainAfter = question.clueMainAfter;
+        response.allResponses = [
+          attempt.firstAttempt,
+          attempt.secondAttempt,
+          attempt.thirdAttempt,
+          attempt.fourthAttempt
+        ]; 
     }
     response = {
       ...response,

@@ -209,6 +209,7 @@ class UserServices {
     return {
       countryStreak: user.countryStreak,
       movieStreak: user.movieStreak,
+      peopleStreak:user.peopleStreak,
       maxStreak: user.maxStreak
     };
   }

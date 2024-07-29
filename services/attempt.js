@@ -152,7 +152,7 @@ class Attempt {
           questionType === QuestionsConstants.COUNTRY
             ? { flag: questionData.clueFlag }
             : questionType === QuestionsConstants.MOVIE
-            ? { releaseYear: questionData.clueCast }
+            ? { cast: questionData.clueCast }
             : { lifespan: questionData.clueLifespan };
         updatedAttempt.secondAttempt = chooseValue;
       } else if (attempt.attemptValue == 2) {
@@ -161,7 +161,7 @@ class Attempt {
           questionType === QuestionsConstants.COUNTRY
             ? { capital: questionData.clueCapital }
             : questionType === QuestionsConstants.MOVIE
-            ? { releaseYear: questionData.clueDirector }
+            ? { director: questionData.clueDirector }
             : { initials: questionData.clueInitials };
         updatedAttempt.thirdAttempt = chooseValue;
       }

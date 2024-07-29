@@ -15,7 +15,8 @@ class Question {
   }
 
   async getQuestion(date, userId) {
-    const question = await QuestionModel.findOne({
+    try{
+      const question = await QuestionModel.findOne({
       include: [
         {
           model: this.model,
@@ -29,8 +30,9 @@ class Question {
     });
     if (!question) {
       const error = new Error("Could not find the Question");
-      error.statusCode = 404;
-      throw error;
+      // error.statusCode = 404;
+      // throw error;
+      return undefined
     }
     let attempt = await Attempt.findOne({
       where: {
@@ -55,6 +57,9 @@ class Question {
     const response = { ...question, attemptInfo: attempt };
     console.info(response);
     return response;
+  }catch(e){
+    return undefined
+    }
   }
 
   async getQuestionByCurrentdate(userId) {
