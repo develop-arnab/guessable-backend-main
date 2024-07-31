@@ -62,15 +62,55 @@ class Attempt {
       };
       attempt = restructuredAttempt;
     } else {
-      attempt = attemptData;
-      attempt.userID = userID;
-      const questionForGivenAttempt = await QuestionModel.findOne({
+      // attempt = attemptData;
+      // attempt.userID = userID;
+      // const questionForGivenAttempt = await QuestionModel.findOne({
+      //   where: {
+      //     id: attempt.quesID
+      //   },
+      //   raw: true
+      // });
+      // attempt.question = questionForGivenAttempt;
+      attempt = await UnregisteredAttemptModel.findOne({
+        include: [
+          {
+            model: QuestionModel,
+            required: true
+          }
+        ],
         where: {
-          id: attempt.quesID
+          id: attemptDataId
         },
         raw: true
       });
-      attempt.question = questionForGivenAttempt;
+
+      if (!attempt) {
+        const error = new Error(
+          "Bad argument: Could not find the attempt data for id: " +
+            attemptDataId
+        );
+        error.statusCode = 404;
+        throw error;
+      }
+      let restructuredAttempt = {
+        id: attempt.id,
+        attemptValue: attempt.attemptValue,
+        isCorrect: attempt.isCorrect,
+        quesID: attempt.quesID,
+        userID: attempt.userID,
+        question: {
+          id: attempt["Question.id"],
+          date: attempt["Question.date"],
+          clueMainBefore: attempt["Question.clueMainBefore"],
+          clueImage: attempt["Question.clueImage"],
+          clueMainAfter: attempt["Question.clueMainAfter"]
+        },
+        firstAttempt: attempt.firstAttempt,
+        secondAttempt: attempt.secondAttempt,
+        thirdAttempt: attempt.thirdAttempt,
+        fourthAttempt: attempt.fourthAttempt
+      };
+      attempt = restructuredAttempt;
     }
 
     if (attempt.isCorrect) {
@@ -248,7 +288,12 @@ class Attempt {
         questionData,
         attempt.attemptValue
       );
-
+      response.allResponses = [
+        attempt.firstAttempt,
+        attempt.secondAttempt,
+        attempt.thirdAttempt,
+        attempt.fourthAttempt
+      ]; 
       return response;
     } else {
       updatedAttempt.attemptValue = updatedAttempt.attemptValue + 1;
@@ -316,9 +361,15 @@ class Attempt {
       response.clueMainAfter = questionData.clueMainAfter;
 
       // console.info(response);
+      response.allResponses = [
+        attempt.firstAttempt,
+        attempt.secondAttempt,
+        attempt.thirdAttempt,
+        attempt.fourthAttempt
+      ]; 
       return response;
     }
-
+    response.attemptNumber = updatedAttempt.attemptValue
     return response;
   }
 

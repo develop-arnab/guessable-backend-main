@@ -40,11 +40,11 @@ router.put(
 router.get("/questionStats/:questionId", getQuestionStats);
 
 // Route to get a question by date (specific or random)
-router.get("/questionByDate/:questionType/:date", getQuestionByDate);
+router.get("/questionByDate/:questionType/:date/:userID", getQuestionByDate);
 
 // Route to get a question in unregistered mode for the current date only
 router.get(
-  "/getQuestionForUnregisteredUser/:questionType",
+  "/getQuestionForUnregisteredUser/:questionType/:userID",
   getQuestionForUnregisteredUser
 );
 
@@ -54,6 +54,6 @@ router.put("/makeAttemptForUnregisteredUser", makeAttemptForUnregisteredUser);
 // Route to make an attempt for an old question
 router.put("/makeAttemptForOldQuestion", makeAttemptForOldQuestion);
 // Route to get stats for questionType by specific user
-router.get("/getStats/:questionType",auth,getQuestionTypeStatsByUser);
+router.get("/getStats/:questionType/:userID",getQuestionTypeStatsByUser);
 
 module.exports = router;

@@ -10,7 +10,7 @@ class Utils {
     const day = String(today.getDate()).padStart(2, "0");
     const formattedDate = `${year}-${month}-${day}`;
     return formattedDate;
-    // return "2024-07-08";
+    // return "2024-07-31";
   }
 
   //For registered users
@@ -26,7 +26,7 @@ class Utils {
     const formattedDate = `${parts[4].value}-${parts[0].value}-${parts[2].value}`;
      console.log("Timezone DATE");
     return formattedDate;
-    // return "2024-08-05"; 
+    // return "2024-08-04";
   }
 
   static getPreviousDayDate(timezone) {

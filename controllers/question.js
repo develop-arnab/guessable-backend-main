@@ -1,7 +1,8 @@
 const Attempt = require("../services/attempt");
 const Question = require("../services/question");
 const Utils = require("../utils/utils");
-
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 exports.getQuestion = async (req, res, next) => {
   try {
     console.log("Requested to /question with params: " + req.params);
@@ -40,13 +41,15 @@ exports.makeAttemptForUnregisteredUser = async (req, res, next) => {
     "Requested to /makeAttemptForUnregisteredUser with body: " + req.body
   );
   try {
-    const { attemptData, chooseValue, questionType, userID } = req.body;
+    const { attemptData, chooseValue, questionType, userID, attemptDataId } =
+      req.body;
 
     const response = await Attempt.makeAttempt({
       chooseValue,
       questionType,
       isRegistered: false,
       attemptData,
+      attemptDataId,
       userID
     });
     res.status(200).json(response);
@@ -80,9 +83,21 @@ exports.getQuestionStats = async (req, res, next) => {
 
 exports.getQuestionByDate = async (req, res, next) => {
   try {
-    const { date, questionType } = req.params;
-    const isRegistered = req.query.registered === "true";
-    const userId = req.query.userId;
+    const { date, questionType, userID } = req.params;
+    // const isRegistered = req.query.registered === "true";
+    const isRegistered = userID == "auth" ? true : false
+    let userId;
+    if(userID == "auth") {
+      const authHeader = req.get("Authorization");
+      const token = authHeader.split(" ")[1];
+      let decodedToken;
+      decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+      let user = await User.findOne({ where: { userId: decodedToken.userId } });
+      // userId = req.query.userId;
+      userId = user.userId;
+    } else {
+      userId = userID;
+    }
     const questionIns = Utils.getInstance(questionType);
     console.log(date, userId, isRegistered);
     const response = await questionIns.getQuestionByDate(
@@ -98,11 +113,14 @@ exports.getQuestionByDate = async (req, res, next) => {
 
 exports.getQuestionForUnregisteredUser = async (req, res, next) => {
   try {
-    const { questionType } = req.params;
+    const { questionType, userID } = req.params;
     const date = Utils.getCurrentDate();
     const questionIns = Utils.getInstance(questionType);
-    console.log("questionIns ", questionIns);
-    const response = await questionIns.getQuestionForUnregisteredUser(date);
+    console.log(" getQuestionForUnregisteredUser userID ", userID);
+    const response = await questionIns.getQuestionForUnregisteredUser(
+      date,
+      userID
+    );
     res.status(200).json(response);
   } catch (err) {
     next(err);
@@ -112,13 +130,14 @@ exports.getQuestionForUnregisteredUser = async (req, res, next) => {
 exports.makeAttemptForOldQuestion = async (req, res, next) => {
   console.log("Requested to /makeAttemptForOldQuestion with body: " + req.body);
   try {
-    const { attemptData, chooseValue, questionType, userID } = req.body;
+    const { attemptData, attemptDataId	, chooseValue, questionType, userID } = req.body;
 
     const response = await Attempt.makeAttempt({
       chooseValue,
       questionType,
-      isRegistered: false,
+      isRegistered: userID == "auth" ? true : false,
       attemptData,
+      attemptDataId,
       userID
     });
     res.status(200).json(response);
@@ -130,10 +149,28 @@ exports.makeAttemptForOldQuestion = async (req, res, next) => {
 
 exports.getQuestionTypeStatsByUser = async (req, res, next) => {
   try {
-    const userId = req.user.id;
-    const type = req.params.questionType;
+    const { questionType, userID } = req.params;
+    // const userId = req.user.id;
+    let userId;
+    let isAuth;
+    if (userID == "auth") {
+      isAuth = true;
+      const authHeader = req.get("Authorization");
+      const token = authHeader.split(" ")[1];
+      let decodedToken;
+      decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+      let user = await User.findOne({
+        where: { userId: decodedToken.userId }
+      });
+      // userId = req.query.userId;
+      userId = user.userId;
+    } else {
+      isAuth = false;
+      userId = userID;
+    }
+    const type = questionType;
     const question = Utils.getInstance(type);
-    const questionTypeStats = await question.questionTypeStats(userId);
+    const questionTypeStats = await question.questionTypeStats(userId, isAuth);
     res.status(200).json(questionTypeStats);
   } catch (err) {
     console.log(err);

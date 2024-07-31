@@ -268,6 +268,26 @@ class Question {
         attempt = attempt.get({ plain: true });
         console.info("Attempt created: " + attempt); // Log the raw attempt data
       }
+      
+      attemptInfo = attempt;
+    } else {
+      let attempt = await UnregisteredAttempt.findOne({
+        where: {
+          userID: userId,
+          quesID: question.id
+        },
+        raw: true
+      });
+      // Create a new attempt if it doesn't exist
+      if (!attempt) {
+        attempt = await UnregisteredAttempt.create({
+          userID: userId,
+          quesID: question.id
+        });
+        // Extract raw response
+        attempt = attempt.get({ plain: true });
+        console.info("Attempt created: " + attempt); // Log the raw attempt data
+      }
 
       attemptInfo = attempt;
     }
@@ -276,7 +296,9 @@ class Question {
     return response;
   }
 
-  async getQuestionForUnregisteredUser(date) {
+  async getQuestionForUnregisteredUser(date, userId) {
+    console.log("RECEIVED USED IDDD ", userId , typeof userId);
+    if(userId !== "null"){
     const question = await QuestionModel.findOne({
       include: [
         {
@@ -294,8 +316,31 @@ class Question {
       error.statusCode = 404;
       throw error;
     }
+    let attemptInfo = {};
+    
+    // try{
+      let attempt = await UnregisteredAttempt.findOne({
+      where: {
+        userID: userId,
+        quesID: question.id
+      },
+      raw: true
+    });
+    // Create a new attempt if it doesn't exist
+    if (!attempt) {
+      attempt = await UnregisteredAttempt.create({
+        userID: userId,
+        quesID: question.id
+      });
+      // Extract raw response
+      attempt = attempt.get({ plain: true });
 
-    return { ...question };
+    }
+    attemptInfo = attempt;
+
+    const response = { ...question, attemptInfo };
+    return response;
+  }
   }
 
   static async getQuestionOnlyNoChild(date, userId, type) {
@@ -335,8 +380,10 @@ class Question {
     return response;
   }
 
-  async questionTypeStats(userId) {
-    const questions = await QuestionModel.findAll({
+  async questionTypeStats(userId, isAuth) {
+    let questions;
+    if(isAuth){
+    questions = await QuestionModel.findAll({
       include: [
         {
           model: this.model,
@@ -355,6 +402,29 @@ class Question {
       attributes: ["id"],
       raw: true
     });
+    } else {
+      console.log("UNREGISTERED STATS USER ID ", userId)
+      questions = await QuestionModel.findAll({
+        include: [
+          {
+            model: this.model,
+            required: true,
+            attributes: []
+          },
+          {
+            model: UnregisteredAttempt,
+            required: true,
+            attributes: ["id", "attemptValue", "isCorrect"],
+            where: {
+              userId: userId
+            }
+          }
+        ],
+        attributes: ["id"],
+        raw: true
+      });
+    }
+
     console.log(questions);
 
     // Counters for each attempt value and win count
@@ -362,8 +432,7 @@ class Question {
     let winCount = 0;
     let scoreNumerator = 0;
     let scoreDenominator = 0;
-
-    // Count attempts and wins
+    if(isAuth){
     questions.forEach((question) => {
       const attemptValue = question["Attempts.attemptValue"];
       if (
@@ -394,6 +463,40 @@ class Question {
       }
       scoreDenominator++;
     });
+    } else {
+          questions.forEach((question) => {
+            const attemptValue = question["UnregisteredAttempts.attemptValue"];
+            if (
+              attemptValue >= 1 &&
+              attemptValue <= 4 &&
+              question["UnregisteredAttempts.isCorrect"] === 1
+            ) {
+              attemptCounts[attemptValue]++;
+              if (question["UnregisteredAttempts.isCorrect"] === 1) {
+                winCount++;
+                switch (attemptValue) {
+                  case 1:
+                    scoreNumerator += 1;
+                    break;
+                  case 2:
+                    scoreNumerator += 0.75;
+                    break;
+                  case 3:
+                    scoreNumerator += 0.5;
+                    break;
+                  case 4:
+                    scoreNumerator += 0.25;
+                    break;
+                }
+              }
+            } else {
+              attemptCounts["X"]++; // Increment count for unattempted guesses
+            }
+            scoreDenominator++;
+          });
+    }
+    // Count attempts and wins
+
 
     // Calculate win percentage
     const totalAttempts = Object.values(attemptCounts).reduce(

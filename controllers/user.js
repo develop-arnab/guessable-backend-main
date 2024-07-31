@@ -83,8 +83,12 @@ exports.signupWithGameData = async (req, res, next) => {
      peopleStreak: streaks.peopleStreak,
      userId: signupResponse.user.userId
    });
-
-   for (const attempt of attemptDataArr) {
+   const unregisteredAttempts = await UnregisteredAttemptModel.findAll({
+     where: {
+       userID: userID
+     }
+   })
+   for (const attempt of unregisteredAttempts) {
      const unregisteredAttempt = await UnregisteredAttemptModel.findOne({
        where: {
          quesID: attempt.quesID,

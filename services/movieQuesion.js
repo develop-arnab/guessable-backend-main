@@ -20,34 +20,24 @@ class MovieQuestion extends Question {
     return this.createQuestionResponse(question);
   }
 
-  async getQuestionForUnregisteredUser(date) {
+  async getQuestionForUnregisteredUser(date, userID) {
     console.log("movie question get question for unregistered user");
-    try{
-    let question = await super.getQuestionForUnregisteredUser(date);
-    if (!question) {
-      let error = new Error("Could not fetch question please try again!");
-      // error.statusCode = 404;
-      // throw error;
+    try {
+      let question = await super.getQuestionForUnregisteredUser(date, userID);
+      if (!question) {
+        let error = new Error("Could not fetch question please try again!");
+        // error.statusCode = 404;
+        // throw error;
+        return undefined;
+      }
+      return this.createQuestionResponse(question);
+    } catch (e) {
       return undefined;
     }
-
-    const response = {
-      id: question.id,
-      date: question.date,
-      clueMainBefore: question.clueMainBefore,
-      clueMainAfter: question.clueMainAfter,
-      imdbLink: question["MovieQuestions.imdbLink"],
-      clueImage: question.clueImage,
-    };
-
-    return response;
-  } catch(e){
-    return undefined
-  }
   }
 
   createQuestionResponse(question) {
-    let response = {  };
+    let response = {};
     if (!question) {
       let error = new Error("Could not fetch question please try again!");
       error.statusCode = 404;
@@ -57,7 +47,7 @@ class MovieQuestion extends Question {
     let attempt = question.attemptInfo;
     let attemptInfo = {
       id: attempt.id,
-      attemptValue: attempt.attemptValue,
+      attemptValue: attempt.attemptValue
     };
     attemptInfo.maxAttempts = QuestionsConstants.maxAttempts;
     attemptInfo.isCorrect = attempt.isCorrect;
@@ -66,20 +56,27 @@ class MovieQuestion extends Question {
     attemptInfo.maxAttempts = QuestionsConstants.maxAttempts;
     if (attemptValue >= 1) {
       attemptInfo.clueOne = {
-        Year: question["MovieQuestion.clueYear"],
+        Year: question["MovieQuestion.clueYear"]
       };
+      response.allResponses = [attempt.firstAttempt];
     }
 
     if (attemptValue >= 2) {
       attemptInfo.clueTwo = {
-        Director: question["MovieQuestion.clueDirector"],
+        Director: question["MovieQuestion.clueDirector"]
       };
+       response.allResponses = [attempt.firstAttempt, attempt.secondAttempt];
     }
 
     if (attemptValue >= 3) {
       attemptInfo.clueThree = {
-        Cast: question["MovieQuestion.clueCast"],
+        Cast: question["MovieQuestion.clueCast"]
       };
+       response.allResponses = [
+         attempt.firstAttempt,
+         attempt.secondAttempt,
+         attempt.thirdAttempt
+       ];
     }
     if (attemptInfo.isCorrect || attemptValue == 4) {
       response.answer = question["MovieQuestion.movieName"];
@@ -98,7 +95,7 @@ class MovieQuestion extends Question {
         attempt.secondAttempt,
         attempt.thirdAttempt,
         attempt.fourthAttempt
-      ]; 
+      ];
     }
 
     response = {
@@ -108,7 +105,7 @@ class MovieQuestion extends Question {
       clueMainBefore: question.clueMainBefore,
       imdbLink: question["MovieQuestion.imdbLink"],
       clueImage: question.clueImage,
-      attemptsInfo: attemptInfo,
+      attemptsInfo: attemptInfo
     };
     return response;
   }

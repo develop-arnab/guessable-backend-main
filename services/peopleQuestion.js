@@ -20,30 +20,20 @@ class PeopleQuestion extends Question {
     return this.createQuestionResponse(question);
   }
 
-  async getQuestionForUnregisteredUser(date) {
+  async getQuestionForUnregisteredUser(date, userID) {
     console.log("movie question get question for unregistered user");
-    try{
-    let question = await super.getQuestionForUnregisteredUser(date);
-    if (!question) {
-      let error = new Error("Could not fetch question please try again!");
-      // error.statusCode = 404;
-      // throw error;
-      return undefined
+    try {
+      let question = await super.getQuestionForUnregisteredUser(date, userID);
+      if (!question) {
+        let error = new Error("Could not fetch question please try again!");
+        // error.statusCode = 404;
+        // throw error;
+        return undefined;
+      }
+      return this.createQuestionResponse(question);
+    } catch (e) {
+      return undefined;
     }
-
-    const response = {
-      id: question.id,
-      date: question.date,
-      clueMainBefore: question.clueMainBefore,
-      clueMainAfter: question.clueMainAfter,
-      wikiLink: question["PeopleQuestion.wikiLink"],
-      clueImage: question.clueImage
-    };
-
-    return response;
-  } catch(e){
-    return undefined
-  }
   }
 
   createQuestionResponse(question) {
@@ -66,39 +56,46 @@ class PeopleQuestion extends Question {
     attemptInfo.maxAttempts = QuestionsConstants.maxAttempts;
     if (attemptValue >= 1) {
       attemptInfo.clueOne = {
-        Year: question["PeopleQuestion.personName"]
+        Year: question["PeopleQuestion.clueNationality"]
       };
+      response.allResponses = [attempt.firstAttempt];
     }
 
     if (attemptValue >= 2) {
       attemptInfo.clueTwo = {
-        Director: question["PeopleQuestion.clueNationality"]
+        Director: question["PeopleQuestion.clueLifespan"]
       };
+      response.allResponses = [attempt.firstAttempt, attempt.secondAttempt];
     }
 
     if (attemptValue >= 3) {
       attemptInfo.clueThree = {
-        Cast: question["PeopleQuestion.clueLifespan"]
+        Cast: question["PeopleQuestion.clueInitials"]
       };
+      response.allResponses = [
+        attempt.firstAttempt,
+        attempt.secondAttempt,
+        attempt.thirdAttempt
+      ];
     }
     if (attemptInfo.isCorrect || attemptValue == 4) {
-      response.answer = question["PeopleQuestion.clueInitials"];
+      response.answer = question["PeopleQuestion.personName"];
       response.clueMainAfter = question.clueMainAfter;
       attemptInfo.clueOne = {
-        Year: question["PeopleQuestion.personName"]
+        Year: question["PeopleQuestion.clueNationality"]
       };
       attemptInfo.clueTwo = {
-        Director: question["PeopleQuestion.clueNationality"]
+        Director: question["PeopleQuestion.clueLifespan"]
       };
       attemptInfo.clueThree = {
-        Cast: question["PeopleQuestion.clueLifespan"]
+        Cast: question["PeopleQuestion.clueInitials"]
       };
       response.allResponses = [
         attempt.firstAttempt,
         attempt.secondAttempt,
         attempt.thirdAttempt,
         attempt.fourthAttempt
-      ]; 
+      ];
     }
 
     response = {
