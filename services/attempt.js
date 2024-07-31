@@ -171,7 +171,9 @@ class Attempt {
           const obj =
             questionType === QuestionsConstants.COUNTRY
               ? { countryStreak: 0 }
-              : { movieStreak: 0 };
+              : questionType === QuestionsConstants.MOVIE
+              ? { movieStreak: 0 }
+              : { peopleStreak: 0 };
 
           obj.userId = attempt.userID;
 
