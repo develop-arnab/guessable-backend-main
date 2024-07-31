@@ -290,6 +290,7 @@ class Attempt {
         questionData,
         attempt.attemptValue
       );
+      response.attemptNumber = updatedAttempt.attemptValue;
       response.allResponses = [
         attempt.firstAttempt,
         attempt.secondAttempt,
@@ -361,7 +362,7 @@ class Attempt {
         attempt.attemptValue
       );
       response.clueMainAfter = questionData.clueMainAfter;
-
+      response.attemptNumber = updatedAttempt.attemptValue;
       // console.info(response);
       response.allResponses = [
         attempt.firstAttempt,

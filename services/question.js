@@ -459,7 +459,9 @@ class Question {
           }
         }
       } else {
-        attemptCounts["X"]++; // Increment count for unattempted guesses
+        if (attemptValue !== null) {
+          attemptCounts["X"]++; // Increment count for unattempted guesses
+        }
       }
       scoreDenominator++;
     });
@@ -467,6 +469,7 @@ class Question {
           questions.forEach((question) => {
             const attemptValue = question["UnregisteredAttempts.attemptValue"];
             if (
+              attemptValue !== null &&
               attemptValue >= 1 &&
               attemptValue <= 4 &&
               question["UnregisteredAttempts.isCorrect"] === 1
@@ -490,7 +493,9 @@ class Question {
                 }
               }
             } else {
-              attemptCounts["X"]++; // Increment count for unattempted guesses
+              if (attemptValue !== null) {
+                attemptCounts["X"]++; // Increment count for unattempted guesses
+              }
             }
             scoreDenominator++;
           });
