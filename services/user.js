@@ -169,16 +169,21 @@ class UserServices {
         updatedUser.countryStreak = user.countryStreak + 1;
       else if (questionType === QuestionsConstants.MOVIE)
         updatedUser.movieStreak = user.movieStreak + 1;
+      else if (questionType === QuestionsConstants.PEOPLE)
+        updatedUser.movieStreak = user.peopleStreak + 1;
     } else {
       if (questionType === QuestionsConstants.COUNTRY)
         updatedUser.countryStreak = 0;
       else if (questionType === QuestionsConstants.MOVIE)
         updatedUser.movieStreak = 0;
+      else if (questionType === QuestionsConstants.PEOPLE)
+        updatedUser.peopleStreak = 0;
     }
     updatedUser.maxStreak = UserServices.getMaxStreak(
       user.maxStreak,
       updatedUser.countryStreak,
-      updatedUser.movieStreak
+      updatedUser.movieStreak,
+      updatedUser.peopleStreak
     );
 
     console.log("user from updatedUser");
