@@ -170,7 +170,7 @@ class UserServices {
       else if (questionType === QuestionsConstants.MOVIE)
         updatedUser.movieStreak = user.movieStreak + 1;
       else if (questionType === QuestionsConstants.PEOPLE)
-        updatedUser.movieStreak = user.peopleStreak + 1;
+        updatedUser.peopleStreak = user.peopleStreak + 1;
     } else {
       if (questionType === QuestionsConstants.COUNTRY)
         updatedUser.countryStreak = 0;

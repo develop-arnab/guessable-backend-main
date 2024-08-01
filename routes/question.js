@@ -24,7 +24,8 @@ router.put(
   body("questionType").custom((value) => {
     if (
       value !== QuestionsConstants.COUNTRY &&
-      value !== QuestionsConstants.MOVIE
+      value !== QuestionsConstants.MOVIE && 
+      value !== QuestionsConstants.PEOPLE
     ) {
       throw new Error(
         'Question type is not valid; it should be either "country" or "movie"'
