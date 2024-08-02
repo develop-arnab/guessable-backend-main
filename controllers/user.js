@@ -76,7 +76,7 @@ exports.signupWithGameData = async (req, res, next) => {
    } else {
      signupResponse = await UserServices.createUser(userInfo);
    }
-
+   if(!signupResponse?.exists) {
    await UserServices.setStreaks({
      countryStreak: streaks.countryStreak,
      movieStreak: streaks.movieStreak,
@@ -133,6 +133,7 @@ exports.signupWithGameData = async (req, res, next) => {
          await AttemptModel.create(newAttemptData);
        }
      }
+   }
    }
 
    res.status(200).json({

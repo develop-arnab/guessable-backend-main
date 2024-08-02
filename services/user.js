@@ -129,8 +129,7 @@ class UserServices {
       })),
         {
           raw: true
-        };
-    }
+    };
     const response = {
       userId: user.userId,
       name: user.name,
@@ -144,7 +143,22 @@ class UserServices {
     };
     const token = UserServices.getJwtToken(user);
 
-    return { user: response, token: token };
+    return { user: response, token: token, exists: false };
+    } else {
+      const response = {
+        userId: user.userId,
+        name: user.name,
+        oAuthProvider: user.oAuthProvider,
+        oAuthId: user.oAuthId,
+        email: user.email,
+        additionalData: user.additionalData,
+        countryStreak: user.countryStreak,
+        movieStreak: user.movieStreak,
+        peopleStreak: user.peopleStreak
+      };
+      const token = UserServices.getJwtToken(user);
+      return { user: response, token: token, exists: true };
+    }
   }
 
   static getJwtToken(user) {
