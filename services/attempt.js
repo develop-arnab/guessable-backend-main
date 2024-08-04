@@ -17,7 +17,8 @@ class Attempt {
     questionType,
     attemptData,
     isRegistered,
-    userID
+    userID,
+    oldQuestionAttempt = false,
   }) {
     let attempt;
     if (isRegistered) {
@@ -254,7 +255,9 @@ class Attempt {
       console.info(
         "Answer is correct and user is registered, now updating streak and stats"
       );
+      if(!oldQuestionAttempt){
       await UserServices.updateStreak(true, attempt.userID, questionType);
+      }
       updatedAttempt.attemptValue++;
       if (attempt.attemptValue) {
         attempt.attemptValue = parseInt(attempt.attemptValue);

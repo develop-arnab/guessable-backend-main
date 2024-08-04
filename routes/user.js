@@ -35,4 +35,6 @@ router.get("/getStreaks", auth, UserController.getStreaks);
 router.get("/getAllCountries", UserController.getAllCountries);
 router.get("/getAllMovies", UserController.getAllMovies);
 router.get("/getAllPeople", UserController.getAllPeople);
+
+router.post("/add-questions", UserController.addQuestions);
 module.exports = router;

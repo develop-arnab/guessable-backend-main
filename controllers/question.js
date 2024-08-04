@@ -138,7 +138,8 @@ exports.makeAttemptForOldQuestion = async (req, res, next) => {
       isRegistered: userID == "auth" ? true : false,
       attemptData,
       attemptDataId,
-      userID
+      userID,
+      oldQuestionAttempt : true
     });
     res.status(200).json(response);
   } catch (err) {

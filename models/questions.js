@@ -17,7 +17,7 @@ const Question = sequelize.define(
     },
     clueImage: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     clueMainAfter: {
       type: DataTypes.TEXT,
